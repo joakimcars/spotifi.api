@@ -1,0 +1,43 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@model NewSpotify.Web.Models.SearchCategoriesResponse
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1>Select a category</h1>
+    </div>
+</div>
+<div class="container justify-content-center">
+    <div class="row mt-4">
+        @foreach (var category in Model.Categories.Items)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                <div class="card h-100">
+                    <img class="card-img-top" src="@category.Icons[0].Url" alt="Card image">
+                    <div class="card-body">
+                        <a asp-controller="Search"
+                           asp-action="PlayLists"
+                           asp-route-id="@category.Id">
+                            @category.Name
+                        </a>
+                    </div>
+                </div>
+            </div>
+         }
+    </div>
+</div>
+
+</body>
+</html>
