@@ -1,0 +1,19 @@
+Arbetsprov food for thought:
+
+*Se till att dotnet koden faktiskt tillför något. Inte bara hämtar.
+
+*Lägga till sessioner om det blir i razor
+
+*Plugga på och implementera cachning
+
+*Specifika vymodeller(formatera om response till lättare klasser
+
+*FIlstruktur
+
+*skapa specifika vymodeller från spotiymodellerna(skapa en modelconverter server som anropas från controllern)
+
+Att fråga Tobbe:
+
+*Verisionshantering
+
+

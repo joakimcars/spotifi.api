@@ -1,4 +1,6 @@
-﻿
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@model NewSpotify.Web.Models.Spotify.SpotifyTrackresponse
+
 @{
     Layout = null;
 }
@@ -12,10 +14,62 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
 </head>
 <body>
-<div class="container">
-    <div class="jumbotron">
-        <h1>Select a track</h1>
+    <div class="container">
+        <div class="Jumbotron">
+            <h1>Select a track</h1>
+        </div>
     </div>
-</div>
+    <br />
+    <div class="container">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    Song
+                </th>
+                <th>
+                    Band
+                </th>
+                <th>
+                    Album
+                </th>
+                <th>
+                    Rating
+                </th>
+                <th>
+                    Like
+                </th>
+            </tr>
+
+            @foreach (var track in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <img src="@track.Track.Album.Images.FirstOrDefault()?.Url" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.Track.Name
+                    </td>
+                    <td>
+                        @track.Track.Artists[0].Name
+                    </td>
+                    <td>
+                        @track.Track.Album.Name
+                    </td>
+                    <td>
+                        @track.Track.Popularity
+                    </td>
+                    <td>
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           asp-route-id="@track.Track.Id">
+                            Like
+                        </a>
+                        
+                        @using (Html.BeginForm("Index", "Home", new {trackId = track.Track.Id}, FormMethod.Post))
+                        {
+                            <button type="submit" class="btn btn-primary">Like</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
 </body>
 </html>

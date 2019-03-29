@@ -4,9 +4,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Flurl;
 using Microsoft.Extensions.Caching.Memory;
+using NewSpotify.Web.Models;
+using NewSpotify.Web.Models.Spotify;
 using Newtonsoft.Json;
 
-namespace NewSpotify.Web.Models
+namespace NewSpotify.Web.Services
 {
     public class MusicService
     {
@@ -40,8 +42,13 @@ namespace NewSpotify.Web.Models
 
         public async Task<SearchArtistResponse> SearchArtistsAsync(string artistName, int? limit = null, int? offset = null)
         {
-            var client = GetDefaultClient();
+            // _memoryCache.Get(cacheNyckel(artistname, limit, offset))
+            // returnera;
 
+
+
+            var client = GetDefaultClient();
+           
             var url = new Url("/v1/search");
             url = url.SetQueryParam("q", artistName);
             url = url.SetQueryParam("type", "artist");
@@ -55,6 +62,9 @@ namespace NewSpotify.Web.Models
             var response = await client.GetStringAsync(url);
 
             var artistResponse = JsonConvert.DeserializeObject<SearchArtistResponse>(response);
+
+            // _memoryCache.Set(artistResponse, cacheNyckel)
+
             return artistResponse;
         }
 
@@ -81,14 +91,34 @@ namespace NewSpotify.Web.Models
             return playListResponse;
         }
 
-        public async void GetTracksForPlaylistAsync(string playListId)
+        public async Task<SpotifyTrackresponse> GetTracksForPlaylistAsync(string playListId)
         {
             var client = GetDefaultClient();
             string endpoint = $"v1/playlists/{playListId}/tracks";
             var url = new Url(endpoint);
             var response = await client.GetStringAsync(url);
 
-            GetTracksForPlaylistAsync("");
+            var tracksResponse = JsonConvert.DeserializeObject<SpotifyTrackresponse>(response);
+
+
+            return tracksResponse;
+        }
+
+        public async Task<SpotifyRecomendationsresponse> GetRecommendationsAsync(List<string> tracks)
+        {
+            var client = GetDefaultClient();
+            var url = new Url("/v1/recommendations");
+
+            foreach (var track in tracks)
+            {
+                url = url.SetQueryParam("seed_tracks", track);
+            }
+
+            var response = await client.GetStringAsync(url);
+            var recommendationsResponse = JsonConvert.DeserializeObject<SpotifyRecomendationsresponse>(response);
+
+            return recommendationsResponse;
+
         }
 
 

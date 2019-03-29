@@ -6,10 +6,11 @@ using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Caching.Memory;
+using NewSpotify.Web.Models;
+using Newtonsoft.Json;
 
-namespace NewSpotify.Web.Models
+namespace NewSpotify.Web.Services
 {
     public class SpotifyAuthClientCredentialsHttpMessageHandler : DelegatingHandler
     {
