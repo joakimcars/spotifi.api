@@ -7,6 +7,10 @@ using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
 
 namespace NewSpotify.Web.Models
 {
+    public class SearchVm
+    {
+        public string SearchString { get; set; }
+    }
     public class SuggestionsByCategoryVm
     {
         public string CategoryName { get; set; }
@@ -22,7 +26,7 @@ namespace NewSpotify.Web.Models
 
     public class SearchTracksResponse
     {
-        [JsonProperty("tracks")]
+       [JsonProperty("tracks")]
         public SearchTracksCollection Tracks { get; set; }
     }
 
@@ -39,12 +43,29 @@ namespace NewSpotify.Web.Models
 
     public class SearchCategoriesResponse
     {
+        public List<SelectedSongItem> SelectedSongs { get; set; }
         [JsonProperty("categories")]
         public SearchCategoriesCollection Categories { get; set; }
     }
 
+    public class SelectedSongItem
+    {
+        [JsonProperty("TrackId")]
+        public string TrackId { get; set; }
+
+        [JsonProperty("SongName")]
+        public string SongName { get; set; }
+
+        [JsonProperty("BandName")]
+        public string BandName { get; set; }
+
+        [JsonProperty("ImageUrl")]
+        public string ImageUrl { get; set; }
+    }
+
     public class SearchPlayListResponse
     {
+        public List<SelectedSongItem> SelectedSongs { get; set; }
         [JsonProperty("playlists")]
         public SearchPlayListsCollection Playlists { get; set; }
     }

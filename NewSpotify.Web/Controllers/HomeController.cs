@@ -13,47 +13,46 @@ namespace NewSpotify.Web.Controllers
 {
     public class HomeController : Controller
     {
-        MusicService service;
-        private List<string> likeList;
+        readonly MusicService service;
+
+
         public HomeController(MusicService service)
         {
             this.service = service;
         }
 
-        public async Task<IActionResult> Index(string trackId)
+        public async Task<IActionResult> Index(string trackId, string songName, string imageUrl, string bandName)
         {
             var likeListSessionKey = "_likeList";
-            likeList = new List<string>();
 
-            //försöker hämta det som finns i seessionen
-            var likeListStringJson = HttpContext.Session.GetString(likeListSessionKey);
+            var likedSongList = GetSessionState();
 
-            //om det finns något i sessionen så sätter vi likeList till vad som finns där
-            if (likeListStringJson != null)
+            if (likedSongList.Count < 5 && trackId != null)
             {
-                likeList = JsonConvert.DeserializeObject<List<string>>(likeListStringJson);
-            }
-            
-            //om likeList är mindre än 5 element så lägger vi till trackId i likeList
-            if (likeList.Count < 5)
-            {
-                if (trackId != null)
+                var selectedSong = new SelectedSongItem()
                 {
-                    likeList.Add(trackId);
-
-                    HttpContext.Session.SetString(likeListSessionKey, likeList.ToString());
-                }
+                    TrackId = trackId,
+                    SongName = songName,
+                    ImageUrl = imageUrl,
+                    BandName = bandName
+                };
+                likedSongList.Add(selectedSong);
+                var json = JsonConvert.SerializeObject(likedSongList);
+                HttpContext.Session.SetString(likeListSessionKey, json);
             }
 
-            //if session likes.count > 4 
-            //redirect to recommendations
-            if (likeList.Count == 5)
+            if (likedSongList.Count == 5)
             {
-                return RedirectToAction("Recommendations", likeList);
+                var likeListIds = new List<string>();
+                foreach (var song in likedSongList)
+                {
+                    likeListIds.Add(song.TrackId);
+                }
+                return RedirectToAction("Recommendations", new { trackIds = likeListIds });
             }
-
 
             var categories = await service.SearchCategoriesASync();
+            categories.SelectedSongs = likedSongList;
             return View(categories);
         }
 
@@ -61,6 +60,48 @@ namespace NewSpotify.Web.Controllers
         {
             var recommendations = await service.GetRecommendationsAsync(trackIds);
             return View(recommendations);
+        }
+
+        public IActionResult RemoveSong(string trackId)
+        {
+            //to be implemented
+            return View();
+        }
+
+        public IActionResult QuickRecommendations()
+        {
+            var likedSongList = GetSessionState();
+            var likeListIds = new List<string>();
+
+            foreach (var track in likedSongList)
+            {
+                likeListIds.Add(track.TrackId);
+            }
+
+            return RedirectToAction("Recommendations", "Home", new { trackIds = likeListIds });
+        }
+
+        public IActionResult NewSearch()
+        {
+            //empty session state
+            HttpContext.Session.Clear();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public List<SelectedSongItem> GetSessionState()
+        {
+            const string likeListSessionKey = "_likeList";
+            var likeList = new List<SelectedSongItem>();
+
+            var likeListStringJson = HttpContext.Session.GetString(likeListSessionKey);
+
+            if (likeListStringJson != null)
+            {
+                likeList = JsonConvert.DeserializeObject<List<SelectedSongItem>>(likeListStringJson);
+            }
+
+            return likeList;
         }
     }
 }

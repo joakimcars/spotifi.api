@@ -2,28 +2,58 @@
 @model NewSpotify.Web.Models.SearchCategoriesResponse
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Start";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
+<div class="mt-4 mb-4">
+    <div class="container">
+        <h1>Select a category that you like</h1>
+        @if (Model.SelectedSongs.Count > 0)
+        {
+            <h4>Selected songs:</h4>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Home</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-</head>
-<body>
-<div class="container">
-    <div class="jumbotron">
-        <h1>Select a category</h1>
+            <table class="table table-striped">
+                <tr>
+                    <th>
+                        Song
+                    </th>
+                    <th>
+                        Band
+                    </th>
+                    <th>
+                        Remove
+                    </th>
+                </tr>
+
+                @foreach (var track in Model.SelectedSongs)
+                {
+                    <tr>
+                        <td>
+                            <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.SongName
+                        </td>
+                        <td>
+                            @track.BandName
+                        </td>
+                        <td>
+                            @Html.ActionLink("Remove", "RemoveSong", "Home")
+                        </td>
+                    </tr>
+                }
+            </table>
+
+            <h4 class="mt-4">@Html.ActionLink("Get Recommendations from selected songs", "QuickRecommendations", "Home", new { selectedSongs = @Model.SelectedSongs })</h4>
+
+        }
+
     </div>
 </div>
+
 <div class="container justify-content-center">
     <div class="row mt-4">
         @foreach (var category in Model.Categories.Items)
         {
-            <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+            <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item mb-4">
                 <div class="card h-100">
                     <img class="card-img-top" src="@category.Icons[0].Url" alt="Card image">
                     <div class="card-body">
@@ -35,9 +65,8 @@
                     </div>
                 </div>
             </div>
-         }
+        }
     </div>
 </div>
 
-</body>
-</html>
+

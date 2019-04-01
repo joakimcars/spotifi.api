@@ -1,19 +1,34 @@
 Arbetsprov food for thought:
 
-*Se till att dotnet koden faktiskt tillför något. Inte bara hämtar.
+to do:
 
-*Lägga till sessioner om det blir i razor
+*Se till att dotnet koden faktiskt tillför något. Inte bara hämtar. alt. hämta från andra endpoints än reccomendations och filtrera själv.
 
 *Plugga på och implementera cachning
-
-*Specifika vymodeller(formatera om response till lättare klasser
 
 *FIlstruktur
 
 *skapa specifika vymodeller från spotiymodellerna(skapa en modelconverter server som anropas från controllern)
 
+
+
+
+Done:
+
+*displaya valda tracks 
+
+*Lägga till sessioner om det blir i razor check
+
+*Erbjud möjlighet att söka innan det finns fem selected items
+
+*skapa en metod för att få session state i 
+
+
 Att fråga Tobbe:
 
-*Verisionshantering
+*Versionshantering
+
+*vart är session state tillgängligt
+
 
 

@@ -5,6 +5,7 @@ namespace NewSpotify.Web.Models.Spotify
 {
     public class SpotifyTrackresponse
     {
+        public List<SelectedSongItem> SelectedSongs { get; set; }
 
         [JsonProperty("href")]
         public string Href { get; set; }
