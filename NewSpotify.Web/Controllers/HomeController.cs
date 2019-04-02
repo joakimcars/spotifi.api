@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using NewSpotify.Web.Models;
 using NewSpotify.Web.Services;
 using Newtonsoft.Json;
@@ -14,15 +15,19 @@ namespace NewSpotify.Web.Controllers
     public class HomeController : Controller
     {
         readonly MusicService service;
+        private readonly ModelConverterService converterService;
+        private readonly MemoryCache cache;
 
-
-        public HomeController(MusicService service)
+        public HomeController(MusicService service, ModelConverterService converterService, MemoryCache cache)
         {
             this.service = service;
+            this.converterService = converterService;
+            this.cache = cache;
         }
 
         public async Task<IActionResult> Index(string trackId, string songName, string imageUrl, string bandName)
         {
+
             var likeListSessionKey = "_likeList";
 
             var likedSongList = GetSessionState();
@@ -51,21 +56,33 @@ namespace NewSpotify.Web.Controllers
                 return RedirectToAction("Recommendations", new { trackIds = likeListIds });
             }
 
+
             var categories = await service.SearchCategoriesASync();
             categories.SelectedSongs = likedSongList;
-            return View(categories);
+            if (categories == null)
+            {
+                //redirect to errorpage
+            }
+            var indexVM = converterService.ConvertToIndexVm(categories, likedSongList);
+            return View(indexVM);
         }
 
         public async Task<IActionResult> Recommendations(List<string> trackIds)
         {
             var recommendations = await service.GetRecommendationsAsync(trackIds);
-            return View(recommendations);
+            var recommendationsVm = converterService.ConvertToRecommendationVm(recommendations);
+            return View(recommendationsVm);
         }
 
         public IActionResult RemoveSong(string trackId)
         {
-            //to be implemented
-            return View();
+            var likeListSessionKey = "_likeList";
+            var likedSongList = GetSessionState();
+
+            likedSongList.RemoveAll(t => t.TrackId == trackId);
+            var json = JsonConvert.SerializeObject(likedSongList);
+            HttpContext.Session.SetString(likeListSessionKey, json);
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult QuickRecommendations()

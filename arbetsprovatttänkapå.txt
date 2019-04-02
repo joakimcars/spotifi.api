@@ -8,8 +8,9 @@ to do:
 
 *FIlstruktur
 
-*skapa specifika vymodeller från spotiymodellerna(skapa en modelconverter server som anropas från controllern)
 
+
+*Gör det möjligt att ta bort en selected song
 
 
 
@@ -22,6 +23,8 @@ Done:
 *Erbjud möjlighet att söka innan det finns fem selected items
 
 *skapa en metod för att få session state i 
+
+*skapa specifika vymodeller från spotiymodellerna(skapa en modelconverter service som anropas från controllern)
 
 
 Att fråga Tobbe:

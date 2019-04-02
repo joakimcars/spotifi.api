@@ -81,11 +81,6 @@ namespace NewSpotify.Web.Models
         public IList<Categories> Items { get; set; }
     }
 
-    public class IndexVm
-    {
-        public IList<Category> Categories { get; set; }
-    }
-
     public class Category
     {
         public string Name { get; set; }

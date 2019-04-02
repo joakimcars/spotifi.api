@@ -1,5 +1,6 @@
 ﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
-@model NewSpotify.Web.Models.Spotify.SpotifyTrackresponse
+@*@model NewSpotify.Web.Models.Spotify.SpotifyTrackresponse*@
+@model NewSpotify.Web.Models.ViewModels.TracksVm
 
 @{
     ViewData["Title"] = "Tracks";
@@ -36,7 +37,7 @@
                             @track.BandName
                         </td>
                         <td>
-                            @Html.ActionLink("Remove", "RemoveSong", "Home")
+                            @Html.ActionLink("Remove", "RemoveSong", "Home", new { trackId = @track.TrackId })
                         </td>
                     </tr>
                 }
@@ -66,26 +67,28 @@
             <th>
                 Like
             </th>
+           
         </tr>
 
-        @foreach (var track in Model.Items)
+        @foreach (var track in Model.Tracks)
         {
             <tr>
                 <td>
-                    <img src="@track.Track.Album.Images.FirstOrDefault()?.Url" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.Track.Name
+                    <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.Name
                 </td>
                 <td>
-                    @track.Track.Artists[0].Name
+                    @track.ArtistName
                 </td>
                 <td>
-                    @track.Track.Album.Name
+                    @track.AlbumName
                 </td>
                 <td>
-                    @track.Track.Popularity
+                    @track.Popularity
                 </td>
                
+               
                 <td>
-                    @using (Html.BeginForm("Index", "Home", new {trackId = track.Track.Id, songName = track.Track.Name, imageUrl = track.Track.Album.Images.FirstOrDefault()?.Url, bandName = track.Track.Artists.FirstOrDefault()?.Name }, FormMethod.Post))
+                    @using (Html.BeginForm("Index", "Home", new {trackId = track.Id, songName = track.Name, imageUrl = track.ImageUrl, bandName = track.ArtistName }, FormMethod.Post))
                     {
                         <button type="submit" class="btn btn-primary">Like</button>
                     }

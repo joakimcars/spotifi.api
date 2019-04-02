@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace NewSpotify.Web.Models.ViewModels
 {
-    public class IndexVm
+    public class TracksVm
     {
+        public List<TrackVm> Tracks { get; set; }
         public List<SelectedSongsVm> SelectedSongs { get; set; }
-        public IList<CategoryVm> Categories { get; set; }
     }
 }

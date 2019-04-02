@@ -16,6 +16,9 @@ namespace NewSpotify.Web.Services
         private readonly IMemoryCache _memoryCache;
         private const string clientId = "996d0037680544c987287a9b0470fdbb";
         private const string clientSecret = "5a3c92099a324b8f9e45d77e919fec13";
+        private const string CategoryCacheKey = "_categoryCache";
+        private const string ArtistCacheKey = "_artistCache";
+        private const string PlaylistCacheKey = "_playlistCache";
 
         protected const string BaseUrl = "https://api.spotify.com/";
 
@@ -43,11 +46,6 @@ namespace NewSpotify.Web.Services
 
         public async Task<SearchArtistResponse> SearchArtistsAsync(string artistName, int? limit = null, int? offset = null)
         {
-            // _memoryCache.Get(cacheNyckel(artistname, limit, offset))
-            // returnera;
-
-
-
             var client = GetDefaultClient();
            
             var url = new Url("/v1/search");
@@ -64,20 +62,36 @@ namespace NewSpotify.Web.Services
 
             var artistResponse = JsonConvert.DeserializeObject<SearchArtistResponse>(response);
 
-            // _memoryCache.Set(artistResponse, cacheNyckel)
-
             return artistResponse;
         }
 
         public async Task<SearchCategoriesResponse> SearchCategoriesASync()
         {
+            
+            if (_memoryCache.TryGetValue(CategoryCacheKey, out var cacheValue))
+            {
+                return cacheValue as SearchCategoriesResponse;
+            }
+
+            
             var client = GetDefaultClient();
 
             var url = new Url("/v1/browse/categories");
-            var response = await client.GetStringAsync(url);
-            var categoriesResponse = JsonConvert.DeserializeObject<SearchCategoriesResponse>(response);
-           
-            return categoriesResponse;
+            try
+            {
+                var response = await client.GetStringAsync(url);
+                var categoriesResponse = JsonConvert.DeserializeObject<SearchCategoriesResponse>(response);
+                _memoryCache.Set(CategoryCacheKey, categoriesResponse, TimeSpan.FromHours(1));
+
+                return categoriesResponse;
+            }
+            catch (HttpRequestException ex)
+            {
+                
+            }
+
+            return null;
+
         }
 
         public async Task<SearchPlayListResponse> GetPlayListsByCategoryAsync(string categoryId)

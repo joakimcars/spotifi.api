@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NewSpotify.Web.Models;
 using NewSpotify.Web.Services;
@@ -25,6 +26,8 @@ namespace NewSpotify.Web
             } );
             
             services.AddTransient<MusicService>();
+            services.AddTransient<ModelConverterService>();
+            services.AddTransient<MemoryCache>();
             services.AddMemoryCache();
             services.AddMvc();
         }

@@ -1,5 +1,6 @@
 ﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
-@model NewSpotify.Web.Models.SearchCategoriesResponse
+@*@model NewSpotify.Web.Models.SearchCategoriesResponse*@
+@model NewSpotify.Web.Models.ViewModels.IndexVm
 
 @{
     ViewData["Title"] = "Start";
@@ -36,7 +37,7 @@
                             @track.BandName
                         </td>
                         <td>
-                            @Html.ActionLink("Remove", "RemoveSong", "Home")
+                            @Html.ActionLink("Remove", "RemoveSong", "Home", new { trackId = @track.TrackId})
                         </td>
                     </tr>
                 }
@@ -51,11 +52,11 @@
 
 <div class="container justify-content-center">
     <div class="row mt-4">
-        @foreach (var category in Model.Categories.Items)
+        @foreach (var category in Model.Categories)
         {
             <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item mb-4">
                 <div class="card h-100">
-                    <img class="card-img-top" src="@category.Icons[0].Url" alt="Card image">
+                    <img class="card-img-top" src="@category.ImageUrl" alt="Card image">
                     <div class="card-body">
                         <a asp-controller="Search"
                            asp-action="PlayLists"

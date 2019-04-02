@@ -12,11 +12,13 @@ namespace NewSpotify.Web.Controllers
 {
     public class SearchController : Controller
     {
-        MusicService service;
+        readonly MusicService service;
+        readonly ModelConverterService converterService;
 
-        public SearchController(MusicService service)
+        public SearchController(MusicService service, ModelConverterService converterService)
         {
             this.service = service;
+            this.converterService = converterService;
         }
         
         public async Task<IActionResult> SearchResults(string searchString) 
@@ -31,7 +33,8 @@ namespace NewSpotify.Web.Controllers
             var likeList = GetSessionState();
             var playLists = await service.GetPlayListsByCategoryAsync(id);
             playLists.SelectedSongs = likeList;
-            return View(playLists);
+            var playListVm = converterService.ConvertToPlaylistVm(playLists, likeList);
+            return View(playListVm);
         }
 
         public async Task<IActionResult> Tracks(string id)
@@ -39,7 +42,8 @@ namespace NewSpotify.Web.Controllers
             var likeList = GetSessionState();
             var tracks = await service.GetTracksForPlaylistAsync(id);
             tracks.SelectedSongs = likeList;
-            return View(tracks);
+            var tracksVm = converterService.ConvertToTracksVm(tracks, likeList);
+            return View(tracksVm);
         }
 
         public List<SelectedSongItem> GetSessionState()

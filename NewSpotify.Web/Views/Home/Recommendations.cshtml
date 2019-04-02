@@ -1,5 +1,6 @@
 ﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
-@model NewSpotify.Web.Models.Spotify.SpotifyRecomendationsresponse
+@*@model NewSpotify.Web.Models.Spotify.SpotifyRecomendationsresponse*@
+@model NewSpotify.Web.Models.ViewModels.RecommendationsVm
 
 @{
     ViewData["Title"] = "Suggestions";
@@ -26,22 +27,28 @@
             <th>
                 Rating
             </th>
+            <th>
+                Listen
+            </th>
         </tr>
 
-        @foreach (var track in Model.Tracks)
+        @foreach (var track in Model.Recommendations)
         {
             <tr>
                 <td>
-                    <img src="@track.Album.Images.FirstOrDefault()?.Url" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.Name
+                    <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.Name
                 </td>
                 <td>
-                    @track.Artists[0].Name
+                    @track.ArtistName
                 </td>
                 <td>
-                    @track.Album.Name
+                    @track.AlbumName
                 </td>
                 <td>
                     @track.Popularity
+                </td>
+                <td>
+                    <a href="@track.SpotifyUrl">Listen</a>
                 </td>
             </tr>
         }

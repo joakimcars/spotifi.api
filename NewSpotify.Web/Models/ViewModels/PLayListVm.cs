@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace NewSpotify.Web.Models.ViewModels
 {
-    public class IndexVm
+    public class PlayListVm
     {
-        public List<SelectedSongsVm> SelectedSongs { get; set; }
-        public IList<CategoryVm> Categories { get; set; }
+        public string ImageUrl { get; set; }
+        public string Name { get; set; }
+        public string Id { get; set; }
     }
 }
