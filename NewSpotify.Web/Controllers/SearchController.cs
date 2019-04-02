@@ -24,6 +24,11 @@ namespace NewSpotify.Web.Controllers
         public async Task<IActionResult> SearchResults(string searchString) 
         {
             var searchResults = await service.SearchArtistsAsync(searchString);
+            if (searchResults == null)
+            {
+                Response.StatusCode = 500;
+                return View("Error");
+            }
             return View(searchResults);
         }
 
@@ -32,6 +37,12 @@ namespace NewSpotify.Web.Controllers
            
             var likeList = GetSessionState();
             var playLists = await service.GetPlayListsByCategoryAsync(id);
+            if (playLists == null)
+            {
+                Response.StatusCode = 500;
+                return View("Error");
+            }
+
             playLists.SelectedSongs = likeList;
             var playListVm = converterService.ConvertToPlaylistVm(playLists, likeList);
             return View(playListVm);
@@ -41,6 +52,11 @@ namespace NewSpotify.Web.Controllers
         {
             var likeList = GetSessionState();
             var tracks = await service.GetTracksForPlaylistAsync(id);
+            if (tracks == null)
+            {
+                Response.StatusCode = 500;
+                return View("Error");
+            }
             tracks.SelectedSongs = likeList;
             var tracksVm = converterService.ConvertToTracksVm(tracks, likeList);
             return View(tracksVm);

@@ -37,7 +37,7 @@
                             @track.BandName
                         </td>
                         <td>
-                            @Html.ActionLink("Remove", "RemoveSong", "Home", new { trackId = @track.TrackId})
+                            @Html.ActionLink("Remove", "RemoveSong", "Home", new { trackId = @track.TrackId })
                         </td>
                     </tr>
                 }
@@ -46,7 +46,6 @@
             <h4 class="mt-4">@Html.ActionLink("Get Recommendations from selected songs", "QuickRecommendations", "Home", new { selectedSongs = @Model.SelectedSongs })</h4>
 
         }
-
     </div>
 </div>
 

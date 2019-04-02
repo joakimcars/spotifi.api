@@ -37,6 +37,7 @@ namespace NewSpotify.Web
         {
             app.UseSession();
             app.UseDeveloperExceptionPage();
+           
             app.UseMvcWithDefaultRoute();
         }
     }

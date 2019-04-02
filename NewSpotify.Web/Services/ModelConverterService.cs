@@ -10,7 +10,7 @@ namespace NewSpotify.Web.Services
 {
     public class ModelConverterService
     {
-        public IndexVm ConvertToIndexVm(SearchCategoriesResponse response, List<SelectedSongItem> Selections)
+        public IndexVm ConvertToIndexVm(SpotifySearchCategoriesResponse response, List<SelectedSongItem> Selections)
         {
             return new IndexVm
             {
@@ -42,7 +42,7 @@ namespace NewSpotify.Web.Services
             return newSong;
         }
 
-        private IList<CategoryVm> BuildCategoryViewModels(IList<Categories> categories)
+        private IList<CategoryVm> BuildCategoryViewModels(IList<SpotifyCategories> categories)
         {
             var newList = new List<CategoryVm>();
             foreach (var category in categories)
@@ -52,7 +52,7 @@ namespace NewSpotify.Web.Services
             return newList;
         }
 
-        public CategoryVm BuildCategoryVm(Categories category)
+        public CategoryVm BuildCategoryVm(SpotifyCategories category)
         {
             var newCategory = new CategoryVm
             {
@@ -64,7 +64,7 @@ namespace NewSpotify.Web.Services
             return newCategory;
         }
 
-        public PlaylistsVm ConvertToPlaylistVm(SearchPlayListResponse response, List<SelectedSongItem> selections)
+        public PlaylistsVm ConvertToPlaylistVm(SpotifySearchPlayListResponse response, List<SelectedSongItem> selections)
         {
             return new PlaylistsVm()
             {
@@ -73,7 +73,7 @@ namespace NewSpotify.Web.Services
             };
         }
 
-        private List<PlayListVm> BuildPlaylistsViewModels(IList<Playlists> playLists)
+        private List<PlayListVm> BuildPlaylistsViewModels(IList<SpotifyPlaylists> playLists)
         {
             
             var newList = new List<PlayListVm>();
@@ -84,7 +84,7 @@ namespace NewSpotify.Web.Services
             return newList;
         }
 
-        public PlayListVm BuildPlayListVm(Playlists playlist)
+        public PlayListVm BuildPlayListVm(SpotifyPlaylists playlist)
         {
             var newPlaylist = new PlayListVm
             {
@@ -140,7 +140,7 @@ namespace NewSpotify.Web.Services
             };
         }
 
-        private List<RecommendationVm> BuildRecommendationsViewModels(IList<Track> tracks)
+        private List<RecommendationVm> BuildRecommendationsViewModels(IList<SpotifyTrack> tracks)
         {
 
             var newList = new List<RecommendationVm>();
@@ -151,7 +151,7 @@ namespace NewSpotify.Web.Services
             return newList;
         }
 
-        public RecommendationVm BuildRecommendationVm(Track track)
+        public RecommendationVm BuildRecommendationVm(SpotifyTrack track)
         {
             var recommendationVm = new RecommendationVm
             {

@@ -4,17 +4,16 @@ to do:
 
 *Se till att dotnet koden faktiskt tillför något. Inte bara hämtar. alt. hämta från andra endpoints än reccomendations och filtrera själv.
 
-*Plugga på och implementera cachning
-
 *FIlstruktur
 
 
 
+Done:
 *Gör det möjligt att ta bort en selected song
 
+*Plugga på och implementera cachning
 
-
-Done:
+*felhantering av HTTPS
 
 *displaya valda tracks 
 
@@ -31,7 +30,11 @@ Att fråga Tobbe:
 
 *Versionshantering
 
-*vart är session state tillgängligt
+*kan jag lägga till cachning för specifika requests?
+
+*vad kan jag göra i catchen för https felhantering?
+
+*frågeställning: Kan jag sätta efterfrågat id till nyckel och skapa caches på så sätt?
 
 
 

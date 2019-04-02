@@ -58,10 +58,11 @@ namespace NewSpotify.Web.Controllers
 
 
             var categories = await service.SearchCategoriesASync();
-            categories.SelectedSongs = likedSongList;
+
             if (categories == null)
             {
-                //redirect to errorpage
+                Response.StatusCode = 500;
+                return View("Error");
             }
             var indexVM = converterService.ConvertToIndexVm(categories, likedSongList);
             return View(indexVM);
@@ -70,7 +71,13 @@ namespace NewSpotify.Web.Controllers
         public async Task<IActionResult> Recommendations(List<string> trackIds)
         {
             var recommendations = await service.GetRecommendationsAsync(trackIds);
+            if (recommendations == null)
+            {
+                Response.StatusCode = 500;
+                return View("Error");
+            }
             var recommendationsVm = converterService.ConvertToRecommendationVm(recommendations);
+            
             return View(recommendationsVm);
         }
 
