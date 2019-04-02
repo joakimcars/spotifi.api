@@ -4,16 +4,19 @@ to do:
 
 *Se till att dotnet koden faktiskt tillför något. Inte bara hämtar. alt. hämta från andra endpoints än reccomendations och filtrera själv.
 
-*FIlstruktur
+
 
 
 
 Done:
+
+*FIlstruktur
+
 *Gör det möjligt att ta bort en selected song
 
 *Plugga på och implementera cachning
 
-*felhantering av HTTPS
+*felhantering av requests
 
 *displaya valda tracks 
 
