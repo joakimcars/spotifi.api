@@ -130,7 +130,7 @@ namespace NewSpotify.Web.Controllers
         {
             var likedSongList = GetSessionState();
             var likeListIds = new List<string>();
-
+            HttpContext.Session.Clear();
             foreach (var track in likedSongList)
             {
                 likeListIds.Add(track.TrackId);
@@ -143,7 +143,7 @@ namespace NewSpotify.Web.Controllers
         {
             var likedSongList = GetSessionState();
             var likeListIds = new List<string>();
-
+            HttpContext.Session.Clear();
             foreach (var track in likedSongList)
             {
                 likeListIds.Add(track.TrackId);
@@ -156,7 +156,7 @@ namespace NewSpotify.Web.Controllers
         {
             var likedSongList = GetSessionState();
             var likeListIds = new List<string>();
-
+            HttpContext.Session.Clear();
             foreach (var track in likedSongList)
             {
                 likeListIds.Add(track.TrackId);

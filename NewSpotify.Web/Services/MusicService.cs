@@ -42,24 +42,24 @@ namespace NewSpotify.Web.Services
             return client;
         }
 
-        public async Task<SpotifySearchArtistResponse> SearchArtistsAsync(string artistName)
+        public async Task<SpotifySearchTrackResponse> SearchArtistsAsync(string trackName)
         {
-            if (_memoryCache.TryGetValue(artistName, out var cacheValue))
+            if (_memoryCache.TryGetValue(trackName, out var cacheValue))
             {
-                return cacheValue as SpotifySearchArtistResponse;
+                return cacheValue as SpotifySearchTrackResponse;
             }
 
             var client = GetDefaultClient();
 
             var url = new Url("/v1/search");
-            url = url.SetQueryParam("q", artistName);
-            url = url.SetQueryParam("type", "artist");
+            url = url.SetQueryParam("q", trackName);
+            url = url.SetQueryParam("type", "track");
 
             try
             {
                 var response = await client.GetStringAsync(url);
-                var artistResponse = JsonConvert.DeserializeObject<SpotifySearchArtistResponse>(response);
-                _memoryCache.Set(artistName, artistResponse, TimeSpan.FromHours(1));
+                var artistResponse = JsonConvert.DeserializeObject<SpotifySearchTrackResponse>(response);
+                _memoryCache.Set(trackName, artistResponse, TimeSpan.FromHours(1));
                 return artistResponse;
             }
             catch (HttpRequestException)

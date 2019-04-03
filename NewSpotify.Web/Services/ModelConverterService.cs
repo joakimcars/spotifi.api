@@ -105,6 +105,17 @@ namespace NewSpotify.Web.Services
             };
         }
 
+        public TracksVm ConvertToTracksVm(SpotifySearchTrackResponse response, List<SelectedSongItem> selections)
+        {
+            return new TracksVm()
+            {
+                Tracks = BuildTracksViewModels(response.Tracks.Items),
+                SelectedSongs = BuildSelectedSongsViewModels(selections)
+            };
+        }
+
+
+
         private List<TrackVm> BuildTracksViewModels(IList<SpotifyItem> tracks)
         {
 
@@ -114,6 +125,34 @@ namespace NewSpotify.Web.Services
                 newList.Add(BuildTrackVm(track));
             }
             return newList;
+        }
+
+        private List<TrackVm> BuildTracksViewModels(IList<SpotifyTrack> tracks)
+        {
+
+            var newList = new List<TrackVm>();
+            foreach (var track in tracks)
+            {
+                newList.Add(BuildTrackVm(track));
+            }
+            return newList;
+        }
+
+
+
+        public TrackVm BuildTrackVm(SpotifyTrack track)
+        {
+            var newTrackVm = new TrackVm
+            {
+                Name = track.Name,
+                Id = track.Id,
+                ImageUrl = track.Album.Images[0].Url,
+                ArtistName = track.Artists[0].Name,
+                AlbumName = track.Album.Name,
+                Popularity = track.Popularity
+            };
+
+            return newTrackVm;
         }
 
         public TrackVm BuildTrackVm(SpotifyItem track)
@@ -175,6 +214,8 @@ namespace NewSpotify.Web.Services
                 Recommendations = BuildRecommendationsViewModels(response)
             };
         }
+
+
 
     }
 }

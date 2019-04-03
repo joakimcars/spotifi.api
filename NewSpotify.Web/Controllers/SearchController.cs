@@ -29,7 +29,12 @@ namespace NewSpotify.Web.Controllers
                 Response.StatusCode = 500;
                 return View("Error");
             }
-            return View(searchResults);
+            var likeList = GetSessionState();
+
+            var resultVm = converterService.ConvertToTracksVm(searchResults, likeList);
+            return View("Tracks", resultVm);
+
+            
         }
 
         public async Task<IActionResult> PlayLists(string id)
