@@ -53,7 +53,7 @@ namespace NewSpotify.Web.Controllers
                 {
                     likeListIds.Add(song.TrackId);
                 }
-                return RedirectToAction("Recommendations", new { trackIds = likeListIds });
+                return RedirectToAction("RecommendationsBySpotify", new { trackIds = likeListIds });
             }
 
 
@@ -68,17 +68,51 @@ namespace NewSpotify.Web.Controllers
             return View(indexVM);
         }
 
-        public async Task<IActionResult> Recommendations(List<string> trackIds)
+        public async Task<IActionResult> RecommendationsBySpotify(List<string> trackIds)
         {
+
             var recommendations = await service.GetRecommendationsAsync(trackIds);
+
             if (recommendations == null)
             {
                 Response.StatusCode = 500;
                 return View("Error");
             }
-            var recommendationsVm = converterService.ConvertToRecommendationVm(recommendations);
-            
-            return View(recommendationsVm);
+            var recommendationsVm = converterService.ConvertToRecommendationsVm(recommendations);
+
+            return View("Recommendations", recommendationsVm);
+        }
+
+        public async Task<IActionResult> RecommendationsByRelated(List<string> trackIds)
+        {
+
+            var recommendations = await service.GetRecommendationByRelatedAsync(trackIds);
+
+            if (recommendations == null)
+            {
+                Response.StatusCode = 500;
+                return View("Error");
+            }
+
+            var recommendationsVm = converterService.ConvertToRecommendationsVm(recommendations);
+
+            return View("Recommendations", recommendationsVm);
+        }
+
+        public async Task<IActionResult> RecommendationsByTrackFeature(List<string> trackIds)
+        {
+
+            var recommendations = await service.GetRecommendationByTrackFeatureAsync(trackIds);
+
+            if (recommendations == null)
+            {
+                Response.StatusCode = 500;
+                return View("Error");
+            }
+
+            var recommendationsVm = converterService.ConvertToRecommendationsVm(recommendations);
+
+            return View("Recommendations", recommendationsVm);
         }
 
         public IActionResult RemoveSong(string trackId)
@@ -92,7 +126,7 @@ namespace NewSpotify.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult QuickRecommendations()
+        public IActionResult QuickRecommendationsBySpotify()
         {
             var likedSongList = GetSessionState();
             var likeListIds = new List<string>();
@@ -102,8 +136,36 @@ namespace NewSpotify.Web.Controllers
                 likeListIds.Add(track.TrackId);
             }
 
-            return RedirectToAction("Recommendations", "Home", new { trackIds = likeListIds });
+            return RedirectToAction("RecommendationsBySpotify", "Home", new { trackIds = likeListIds });
         }
+
+        public IActionResult QuickRecommendationsByRelation()
+        {
+            var likedSongList = GetSessionState();
+            var likeListIds = new List<string>();
+
+            foreach (var track in likedSongList)
+            {
+                likeListIds.Add(track.TrackId);
+            }
+
+            return RedirectToAction("RecommendationsByRelated", "Home", new { trackIds = likeListIds });
+        }
+
+        public IActionResult QuickRecommendationsByTrackFeatures()
+        {
+            var likedSongList = GetSessionState();
+            var likeListIds = new List<string>();
+
+            foreach (var track in likedSongList)
+            {
+                likeListIds.Add(track.TrackId);
+            }
+
+            return RedirectToAction("RecommendationsByTrackFeature", "Home", new { trackIds = likeListIds });
+        }
+
+
 
         public IActionResult NewSearch()
         {

@@ -35,12 +35,12 @@
                             @track.BandName
                         </td>
                         <td>
-                            @Html.ActionLink("Remove", "RemoveSong", "Home", new { trackId = @track.TrackId})
+                            @Html.ActionLink("Remove", "RemoveSong", "Home", new { trackId = @track.TrackId })
                         </td>
                     </tr>
                 }
             </table>
-            <h4 class="mt-4">@Html.ActionLink("Get Recommendations from selected songs", "QuickRecommendations", "Home", new { selectedSongs = @Model.SelectedSongs })</h4>
+            <p class="mt-4">@Html.ActionLink("Get Recommendations from Spotify api", "QuickRecommendationsBySpotify", "Home", new { selectedSongs = @Model.SelectedSongs }) || @Html.ActionLink("Get Recommendations by related artists top tracks", "QuickRecommendationsByRelation", "Home", new { selectedSongs = @Model.SelectedSongs }) ||  @Html.ActionLink("Get Recommendations by track features", "QuickRecommendationsByTrackFeatures", "Home", new { selectedSongs = @Model.SelectedSongs })</p>
         }
 
     </div>

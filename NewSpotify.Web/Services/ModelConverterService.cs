@@ -167,5 +167,14 @@ namespace NewSpotify.Web.Services
 
         }
 
+        public RecommendationsVm ConvertToRecommendationsVm(List<SpotifyTrack> response)
+        {
+
+            return new RecommendationsVm
+            {
+                Recommendations = BuildRecommendationsViewModels(response)
+            };
+        }
+
     }
 }
