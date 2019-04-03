@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,18 +10,18 @@ namespace NewSpotify.Web.Controllers
 {
     public class SearchController : Controller
     {
-        readonly MusicService service;
-        readonly ModelConverterService converterService;
+        readonly MusicService _service;
+        readonly ModelConverterService _converterService;
 
         public SearchController(MusicService service, ModelConverterService converterService)
         {
-            this.service = service;
-            this.converterService = converterService;
+            _service = service;
+            _converterService = converterService;
         }
         
         public async Task<IActionResult> SearchResults(string searchString) 
         {
-            var searchResults = await service.SearchArtistsAsync(searchString);
+            var searchResults = await _service.SearchTracksAsync(searchString);
             if (searchResults == null)
             {
                 Response.StatusCode = 500;
@@ -31,7 +29,7 @@ namespace NewSpotify.Web.Controllers
             }
             var likeList = GetSessionState();
 
-            var resultVm = converterService.ConvertToTracksVm(searchResults, likeList);
+            var resultVm = _converterService.ConvertToTracksVm(searchResults, likeList);
             return View("Tracks", resultVm);
 
             
@@ -41,7 +39,7 @@ namespace NewSpotify.Web.Controllers
         {
            
             var likeList = GetSessionState();
-            var playLists = await service.GetPlayListsByCategoryAsync(id);
+            var playLists = await _service.GetPlayListsByCategoryAsync(id);
             if (playLists == null)
             {
                 Response.StatusCode = 500;
@@ -49,21 +47,21 @@ namespace NewSpotify.Web.Controllers
             }
 
             playLists.SelectedSongs = likeList;
-            var playListVm = converterService.ConvertToPlaylistVm(playLists, likeList);
+            var playListVm = _converterService.ConvertToPlaylistVm(playLists, likeList);
             return View(playListVm);
         }
 
         public async Task<IActionResult> Tracks(string id)
         {
             var likeList = GetSessionState();
-            var tracks = await service.GetTracksForPlaylistAsync(id);
+            var tracks = await _service.GetTracksForPlaylistAsync(id);
             if (tracks == null)
             {
                 Response.StatusCode = 500;
                 return View("Error");
             }
             tracks.SelectedSongs = likeList;
-            var tracksVm = converterService.ConvertToTracksVm(tracks, likeList);
+            var tracksVm = _converterService.ConvertToTracksVm(tracks, likeList);
             return View(tracksVm);
         }
 

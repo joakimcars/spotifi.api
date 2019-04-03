@@ -43,7 +43,7 @@
                 }
             </table>
 
-            <p class="mt-4">@Html.ActionLink("Get Recommendations from Spotify api", "QuickRecommendationsBySpotify", "Home", new { selectedSongs = @Model.SelectedSongs }) || @Html.ActionLink("Get Recommendations by related artists top tracks", "QuickRecommendationsByRelation", "Home", new { selectedSongs = @Model.SelectedSongs }) ||  @Html.ActionLink("Get Recommendations by track features", "QuickRecommendationsByTrackFeatures", "Home", new { selectedSongs = @Model.SelectedSongs })</p>
+            <p class="mt-4">@Html.ActionLink("Get Recommendations from Spotify api", "QuickRecommendation", "Home", new { target = "RecommendationsBySpotify" }) || @Html.ActionLink("Get Recommendations by related artists top tracks", "QuickRecommendation", "Home", new { target = "RecommendationsByRelated" }) ||  @Html.ActionLink("Get Recommendations by track features", "QuickRecommendation", "Home", new { target = "RecommendationsByTrackFeature" })</p>
 
         }
     </div>

@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Flurl;
 using Microsoft.Extensions.Caching.Memory;
-using NewSpotify.Web.Models;
 using NewSpotify.Web.Models.Spotify;
 using Newtonsoft.Json;
 
@@ -14,8 +13,8 @@ namespace NewSpotify.Web.Services
     public class MusicService
     {
         private readonly IMemoryCache _memoryCache;
-        private const string clientId = "996d0037680544c987287a9b0470fdbb";
-        private const string clientSecret = "5a3c92099a324b8f9e45d77e919fec13";
+        private const string ClientId = "996d0037680544c987287a9b0470fdbb";
+        private const string ClientSecret = "5a3c92099a324b8f9e45d77e919fec13";
         private const string CategoryCacheKey = "_categoryCache";
 
         protected const string BaseUrl = "https://api.spotify.com/";
@@ -28,8 +27,8 @@ namespace NewSpotify.Web.Services
         private HttpClient GetDefaultClient()
         {
             var authHandler = new SpotifyAuthClientCredentialsHttpMessageHandler(
-                clientId,
-                clientSecret,
+                ClientId,
+                ClientSecret,
                 new HttpClientHandler(),
                 _memoryCache
             );
@@ -42,7 +41,7 @@ namespace NewSpotify.Web.Services
             return client;
         }
 
-        public async Task<SpotifySearchTrackResponse> SearchArtistsAsync(string trackName)
+        public async Task<SpotifySearchTrackResponse> SearchTracksAsync(string trackName)
         {
             if (_memoryCache.TryGetValue(trackName, out var cacheValue))
             {
@@ -58,9 +57,9 @@ namespace NewSpotify.Web.Services
             try
             {
                 var response = await client.GetStringAsync(url);
-                var artistResponse = JsonConvert.DeserializeObject<SpotifySearchTrackResponse>(response);
-                _memoryCache.Set(trackName, artistResponse, TimeSpan.FromHours(1));
-                return artistResponse;
+                var tracksResponse = JsonConvert.DeserializeObject<SpotifySearchTrackResponse>(response);
+                _memoryCache.Set(trackName, tracksResponse, TimeSpan.FromHours(1));
+                return tracksResponse;
             }
             catch (HttpRequestException)
             {
@@ -100,7 +99,7 @@ namespace NewSpotify.Web.Services
             }
 
             var client = GetDefaultClient();
-            string endpoint = $"/v1/browse/categories/{categoryId}/playlists";
+            var endpoint = $"/v1/browse/categories/{categoryId}/playlists";
 
             var url = new Url(endpoint);
             try
@@ -209,7 +208,7 @@ namespace NewSpotify.Web.Services
         public async Task<SpotifyTrack> GetTracksAsync(string trackId)
         {
             var client = GetDefaultClient();
-            string endpoint = $"v1/tracks/{trackId}";
+            var endpoint = $"v1/tracks/{trackId}";
             var url = new Url(endpoint);
             var response = await client.GetStringAsync(url);
 
@@ -221,7 +220,7 @@ namespace NewSpotify.Web.Services
         public async Task<List<SpotifyArtist>> GetRelatedArtistAsync(string artistId)
         {
             var client = GetDefaultClient();
-            string endpoint = $"v1/artists/{artistId}/related-artists";
+            var endpoint = $"v1/artists/{artistId}/related-artists";
             var url = new Url(endpoint);
             var response = await client.GetStringAsync(url);
 
@@ -236,7 +235,7 @@ namespace NewSpotify.Web.Services
         public async Task<List<SpotifyTrack>> GetTopTracksForArtistAsync(string artistId)
         {
             var client = GetDefaultClient();
-            string endpoint = $"v1/artists/{artistId}/top-tracks?country=ES";
+            var endpoint = $"v1/artists/{artistId}/top-tracks?country=ES";
             var url = new Url(endpoint);
             var response = await client.GetStringAsync(url);
 
@@ -274,7 +273,7 @@ namespace NewSpotify.Web.Services
         public async Task<SpotifyTrackFeaturesResponse> GetTrackFeaturesAsync(string trackId)
         {
             var client = GetDefaultClient();
-            string endpoint = $"v1/audio-features/{trackId}";
+            var endpoint = $"v1/audio-features/{trackId}";
             var url = new Url(endpoint);
             var response = await client.GetStringAsync(url);
             var trackFeaturesResponse = JsonConvert.DeserializeObject<SpotifyTrackFeaturesResponse>(response);

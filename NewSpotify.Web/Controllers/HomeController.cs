@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using NewSpotify.Web.Models;
 using NewSpotify.Web.Services;
 using Newtonsoft.Json;
@@ -14,21 +10,18 @@ namespace NewSpotify.Web.Controllers
 {
     public class HomeController : Controller
     {
-        readonly MusicService service;
-        private readonly ModelConverterService converterService;
-        private readonly MemoryCache cache;
+        private readonly MusicService _service;
+        private readonly ModelConverterService _converterService;
 
-        public HomeController(MusicService service, ModelConverterService converterService, MemoryCache cache)
+        public HomeController(MusicService service, ModelConverterService converterService)
         {
-            this.service = service;
-            this.converterService = converterService;
-            this.cache = cache;
+            _service = service;
+            _converterService = converterService;
         }
 
         public async Task<IActionResult> Index(string trackId, string songName, string imageUrl, string bandName)
         {
-
-            var likeListSessionKey = "_likeList";
+            const string likeListSessionKey = "_likeList";
 
             var likedSongList = GetSessionState();
 
@@ -56,29 +49,28 @@ namespace NewSpotify.Web.Controllers
                 return RedirectToAction("RecommendationsBySpotify", new { trackIds = likeListIds });
             }
 
-
-            var categories = await service.SearchCategoriesASync();
+            var categories = await _service.SearchCategoriesASync();
 
             if (categories == null)
             {
                 Response.StatusCode = 500;
                 return View("Error");
             }
-            var indexVM = converterService.ConvertToIndexVm(categories, likedSongList);
-            return View(indexVM);
+            var indexVm = _converterService.ConvertToIndexVm(categories, likedSongList);
+            return View(indexVm);
         }
 
         public async Task<IActionResult> RecommendationsBySpotify(List<string> trackIds)
         {
 
-            var recommendations = await service.GetRecommendationsAsync(trackIds);
+            var recommendations = await _service.GetRecommendationsAsync(trackIds);
 
             if (recommendations == null)
             {
                 Response.StatusCode = 500;
                 return View("Error");
             }
-            var recommendationsVm = converterService.ConvertToRecommendationsVm(recommendations);
+            var recommendationsVm = _converterService.ConvertToRecommendationsVm(recommendations);
 
             return View("Recommendations", recommendationsVm);
         }
@@ -86,7 +78,7 @@ namespace NewSpotify.Web.Controllers
         public async Task<IActionResult> RecommendationsByRelated(List<string> trackIds)
         {
 
-            var recommendations = await service.GetRecommendationByRelatedAsync(trackIds);
+            var recommendations = await _service.GetRecommendationByRelatedAsync(trackIds);
 
             if (recommendations == null)
             {
@@ -94,7 +86,7 @@ namespace NewSpotify.Web.Controllers
                 return View("Error");
             }
 
-            var recommendationsVm = converterService.ConvertToRecommendationsVm(recommendations);
+            var recommendationsVm = _converterService.ConvertToRecommendationsVm(recommendations);
 
             return View("Recommendations", recommendationsVm);
         }
@@ -102,7 +94,7 @@ namespace NewSpotify.Web.Controllers
         public async Task<IActionResult> RecommendationsByTrackFeature(List<string> trackIds)
         {
 
-            var recommendations = await service.GetRecommendationByTrackFeatureAsync(trackIds);
+            var recommendations = await _service.GetRecommendationByTrackFeatureAsync(trackIds);
 
             if (recommendations == null)
             {
@@ -110,14 +102,14 @@ namespace NewSpotify.Web.Controllers
                 return View("Error");
             }
 
-            var recommendationsVm = converterService.ConvertToRecommendationsVm(recommendations);
+            var recommendationsVm = _converterService.ConvertToRecommendationsVm(recommendations);
 
             return View("Recommendations", recommendationsVm);
         }
 
         public IActionResult RemoveSong(string trackId)
         {
-            var likeListSessionKey = "_likeList";
+            const string likeListSessionKey = "_likeList";
             var likedSongList = GetSessionState();
 
             likedSongList.RemoveAll(t => t.TrackId == trackId);
@@ -126,7 +118,7 @@ namespace NewSpotify.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult QuickRecommendationsBySpotify()
+        public IActionResult QuickRecommendation(string target)
         {
             var likedSongList = GetSessionState();
             var likeListIds = new List<string>();
@@ -136,40 +128,11 @@ namespace NewSpotify.Web.Controllers
                 likeListIds.Add(track.TrackId);
             }
 
-            return RedirectToAction("RecommendationsBySpotify", "Home", new { trackIds = likeListIds });
+            return RedirectToAction(target, "Home", new { trackIds = likeListIds });
         }
-
-        public IActionResult QuickRecommendationsByRelation()
-        {
-            var likedSongList = GetSessionState();
-            var likeListIds = new List<string>();
-            HttpContext.Session.Clear();
-            foreach (var track in likedSongList)
-            {
-                likeListIds.Add(track.TrackId);
-            }
-
-            return RedirectToAction("RecommendationsByRelated", "Home", new { trackIds = likeListIds });
-        }
-
-        public IActionResult QuickRecommendationsByTrackFeatures()
-        {
-            var likedSongList = GetSessionState();
-            var likeListIds = new List<string>();
-            HttpContext.Session.Clear();
-            foreach (var track in likedSongList)
-            {
-                likeListIds.Add(track.TrackId);
-            }
-
-            return RedirectToAction("RecommendationsByTrackFeature", "Home", new { trackIds = likeListIds });
-        }
-
-
 
         public IActionResult NewSearch()
         {
-            //empty session state
             HttpContext.Session.Clear();
 
             return RedirectToAction("Index", "Home");

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using NewSpotify.Web.Models;
 using NewSpotify.Web.Models.Spotify;
 using NewSpotify.Web.Models.ViewModels;
@@ -10,58 +8,36 @@ namespace NewSpotify.Web.Services
 {
     public class ModelConverterService
     {
-        public IndexVm ConvertToIndexVm(SpotifySearchCategoriesResponse response, List<SelectedSongItem> Selections)
+        public IndexVm ConvertToIndexVm(SpotifySearchCategoriesResponse response, List<SelectedSongItem> selections)
         {
             return new IndexVm
             {
                 Categories = BuildCategoryViewModels(response.Categories.Items),
-                SelectedSongs = BuildSelectedSongsViewModels(Selections)  
+                SelectedSongs = BuildSelectedSongsViewModels(selections)  
             };
         }
 
         private List<SelectedSongsVm> BuildSelectedSongsViewModels(List<SelectedSongItem> selectedSongItems)
         {
-            var newList = new List<SelectedSongsVm>();
-            foreach (var song in selectedSongItems)
+            var newList = selectedSongItems.Select(s => new SelectedSongsVm
             {
-                newList.Add(BuildSelectedSongsVm(song));
-            }
-            return newList;
-        }
-
-        public SelectedSongsVm BuildSelectedSongsVm(SelectedSongItem song)
-        {
-            var newSong = new SelectedSongsVm()
-            {
-                SongName = song.SongName,
-                BandName = song.BandName,
-                ImageUrl = song.ImageUrl,
-                TrackId = song.TrackId
-            };
-
-            return newSong;
+                SongName = s.SongName,
+                BandName = s.BandName,
+                ImageUrl = s.ImageUrl,
+                TrackId = s.TrackId
+            });
+            return newList.ToList();
         }
 
         private IList<CategoryVm> BuildCategoryViewModels(IList<SpotifyCategories> categories)
         {
-            var newList = new List<CategoryVm>();
-            foreach (var category in categories)
+            var newList = categories.Select(s => new CategoryVm
             {
-               newList.Add(BuildCategoryVm(category));
-            }
-            return newList;
-        }
-
-        public CategoryVm BuildCategoryVm(SpotifyCategories category)
-        {
-            var newCategory = new CategoryVm
-            {
-                Name = category.Name,
-                Id = category.Id,
-                ImageUrl = category.Icons[0].Url
-            };
-
-            return newCategory;
+                Name = s.Name,
+                Id = s.Id,
+                ImageUrl = s.Icons[0].Url
+            });
+            return newList.ToList();
         }
 
         public PlaylistsVm ConvertToPlaylistVm(SpotifySearchPlayListResponse response, List<SelectedSongItem> selections)
@@ -75,26 +51,26 @@ namespace NewSpotify.Web.Services
 
         private List<PlayListVm> BuildPlaylistsViewModels(IList<SpotifyPlaylists> playLists)
         {
-            
-            var newList = new List<PlayListVm>();
-            foreach (var playlist in playLists)
+            var newList = playLists.Select(s => new PlayListVm
             {
-                newList.Add(BuildPlayListVm(playlist));
-            }
-            return newList;
+                Name = s.Name,
+                Id = s.Id,
+                ImageUrl = s.Images[0].Url
+            });
+            return newList.ToList();
         }
 
-        public PlayListVm BuildPlayListVm(SpotifyPlaylists playlist)
-        {
-            var newPlaylist = new PlayListVm
-            {
-                Name = playlist.Name,
-                Id = playlist.Id,
-                ImageUrl = playlist.Images[0].Url
-            };
+        //public PlayListVm BuildPlayListVm(SpotifyPlaylists playlist)
+        //{
+        //    var newPlaylist = new PlayListVm
+        //    {
+        //        Name = playlist.Name,
+        //        Id = playlist.Id,
+        //        ImageUrl = playlist.Images[0].Url
+        //    };
 
-            return newPlaylist;
-        }
+        //    return newPlaylist;
+        //}
 
         public TracksVm ConvertToTracksVm(SpotifyTrackresponse response, List<SelectedSongItem> selections)
         {
@@ -168,15 +144,6 @@ namespace NewSpotify.Web.Services
             };
 
             return newTrackVm;
-        }
-
-        public RecommendationsVm ConvertToRecommendationVm(SpotifyRecomendationsresponse response)
-        {
-            
-            return new RecommendationsVm
-            {
-                Recommendations = BuildRecommendationsViewModels(response.Tracks)
-            };
         }
 
         private List<RecommendationVm> BuildRecommendationsViewModels(IList<SpotifyTrack> tracks)
