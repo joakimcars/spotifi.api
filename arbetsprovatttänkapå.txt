@@ -2,13 +2,21 @@ Arbetsprov food for thought:
 
 to do:
 
-*Se till att dotnet koden faktiskt tillför något. Inte bara hämtar. alt. hämta från andra endpoints än reccomendations och filtrera själv.
 
 
 
 
+*Cachning/felhantering av tillägg i musikservice
+
+*refaktorisering av tillägg i musicservice
 
 Done:
+
+*Se om man kan refaktorisera ihop quick recommendations
+
+*Gör så att man kan lägga till låtar från frisökningen
+
+*Se till att dotnet koden faktiskt tillför något. Inte bara hämtar. alt. hämta från andra endpoints än reccomendations och filtrera själv.
 
 *FIlstruktur
 
@@ -33,11 +41,11 @@ Att fråga Tobbe:
 
 *Versionshantering
 
-*kan jag lägga till cachning för specifika requests?
+* Kan jag använda delegater för att kontrollera vilket metod i servicen som anropas från quickrecommendation
 
-*vad kan jag göra i catchen för https felhantering?
 
-*frågeställning: Kan jag sätta efterfrågat id till nyckel och skapa caches på så sätt?
+
+
 
 
 
