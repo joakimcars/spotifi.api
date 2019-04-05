@@ -22,33 +22,7 @@ namespace NewSpotify.Web.Controllers
 
         public async Task<IActionResult> Index(string trackId, string songName, string imageUrl, string bandName)
         {
-            //const string likeListSessionKey = "_likeList";
-
             var likedSongList = GetSessionState();
-
-            //if (likedSongList.Count < 5 && trackId != null)
-            //{
-            //    var selectedSong = new SelectedSongItem()
-            //    {
-            //        TrackId = trackId,
-            //        SongName = songName,
-            //        ImageUrl = imageUrl,
-            //        BandName = bandName
-            //    };
-            //    likedSongList.Add(selectedSong);
-            //    var json = JsonConvert.SerializeObject(likedSongList);
-            //    HttpContext.Session.SetString(likeListSessionKey, json);
-            //}
-
-            //if (likedSongList.Count == 5)
-            //{
-            //    var likeListIds = new List<string>();
-            //    foreach (var song in likedSongList)
-            //    {
-            //        likeListIds.Add(song.TrackId);
-            //    }
-            //    return RedirectToAction("RecommendationsBySpotify", new { trackIds = likeListIds });
-            //}
 
             var categories = await _service.SearchCategoriesASync();
 

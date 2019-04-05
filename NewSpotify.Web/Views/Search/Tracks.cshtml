@@ -8,7 +8,7 @@
 
 <div class="mt-4 mb-4">
     <div class="container">
-        <h1>Select a song that you like</h1>
+        
         @if (Model.SelectedSongs.Count > 0)
         {
             <h4>Selected songs:</h4>
@@ -49,6 +49,7 @@
 </div>
 
 <div class="container">
+    <h1>Select a song that you like</h1>
     <table class="table table-striped">
         <tr>
             <th>
@@ -66,14 +67,14 @@
             <th>
                 Like
             </th>
-           
+
         </tr>
 
         @foreach (var track in Model.Tracks)
         {
             <tr>
                 <td>
-                    <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.Name
+                    <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" /> @track.Name
                 </td>
                 <td>
                     @track.ArtistName
@@ -84,10 +85,10 @@
                 <td>
                     @track.Popularity
                 </td>
-               
-               
+
+
                 <td>
-                    @using (Html.BeginForm("SetSessionState", "Search", new {trackId = track.Id, songName = track.Name, imageUrl = track.ImageUrl, bandName = track.ArtistName, playlistId = @Model.PlaylistId }, FormMethod.Post))
+                    @using (Html.BeginForm("SetSessionState", "Search", new { trackId = track.Id, songName = track.Name, imageUrl = track.ImageUrl, bandName = track.ArtistName, playlistId = @Model.PlaylistId }, FormMethod.Post))
                     {
                         <button type="submit" class="btn btn-primary">Like</button>
                     }
