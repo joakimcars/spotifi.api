@@ -6,9 +6,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="mt-4 mb-4">
+@*<div class="mt-4 mb-4">
     <div class="container">
-        
+
         @if (Model.SelectedSongs.Count > 0)
         {
             <h4>Selected songs:</h4>
@@ -46,7 +46,12 @@
         }
 
     </div>
-</div>
+</div>*@
+
+@{
+    await Html.RenderPartialAsync("~/Views/Shared/_SelectedSongsPartial.cshtml");
+
+}
 
 <div class="container">
     <h1>Select a song that you like</h1>

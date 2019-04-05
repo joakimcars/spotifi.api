@@ -4,6 +4,9 @@ to do:
 
 *Skriv inte ut kategorier som inte har några spellistor.
 
+*Gör sökningen mer dynamisk genom att kunna få rekommendationer från artister också.
+
+
 
 
 *Cachning/felhantering av tillägg i musikservice
@@ -11,6 +14,9 @@ to do:
 *refaktorisering av tillägg i musicservice
 
 Done:
+
+* Gör så att en like inte redirektar utan tillåt användaren att stanna i samma view och gilla fler grejjer.
+
 *Länka till start
 
 *Se om man kan refaktorisera ihop quick recommendations
