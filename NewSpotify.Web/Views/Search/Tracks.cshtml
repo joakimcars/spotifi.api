@@ -1,52 +1,10 @@
 ﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
-@model NewSpotify.Web.Models.ViewModels.TracksVm
+@model NewSpotify.Models.Models.ViewModels.TracksVm
 
 @{
     ViewData["Title"] = "Tracks";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-@*<div class="mt-4 mb-4">
-    <div class="container">
-
-        @if (Model.SelectedSongs.Count > 0)
-        {
-            <h4>Selected songs:</h4>
-
-            <table class="table table-striped">
-                <tr>
-                    <th>
-                        Song
-                    </th>
-                    <th>
-                        Band
-                    </th>
-                    <th>
-                        Remove
-                    </th>
-                </tr>
-
-                @foreach (var track in Model.SelectedSongs)
-                {
-                    <tr>
-                        <td>
-                            <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" />    @track.SongName
-                        </td>
-                        <td>
-                            @track.BandName
-                        </td>
-                        <td>
-                            @Html.ActionLink("Remove", "RemoveSong", "Home", new { trackId = @track.TrackId })
-                        </td>
-                    </tr>
-                }
-            </table>
-            <p class="mt-4">@Html.ActionLink("Get Recommendations from Spotify api", "QuickRecommendation", "Home", new { target = "RecommendationsBySpotify" }) || @Html.ActionLink("Get Recommendations by related artists top tracks", "QuickRecommendation", "Home", new { target = "RecommendationsByRelated" }) ||  @Html.ActionLink("Get Recommendations by track features", "QuickRecommendation", "Home", new { target = "RecommendationsByTrackFeature" })</p>
-
-        }
-
-    </div>
-</div>*@
 
 @{
     await Html.RenderPartialAsync("~/Views/Shared/_SelectedSongsPartial.cshtml");

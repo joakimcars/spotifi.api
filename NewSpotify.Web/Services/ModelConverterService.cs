@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NewSpotify.Web.Models;
-using NewSpotify.Web.Models.Spotify;
-using NewSpotify.Web.Models.ViewModels;
+using NewSpotify.Models.Models.Spotify;
+using NewSpotify.Models.Models.StateManagerModels;
+using NewSpotify.Models.Models.ViewModels;
+
 
 namespace NewSpotify.Web.Services
 {

@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Flurl;
 using Microsoft.Extensions.Caching.Memory;
-using NewSpotify.Web.Models.Spotify;
+using NewSpotify.Models.Models.Spotify;
 using Newtonsoft.Json;
 
 namespace NewSpotify.Web.Services

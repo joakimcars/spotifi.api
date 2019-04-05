@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using NewSpotify.Web.Models;
+using NewSpotify.Models.Models.AuthModel;
 using Newtonsoft.Json;
 
 namespace NewSpotify.Web.Services

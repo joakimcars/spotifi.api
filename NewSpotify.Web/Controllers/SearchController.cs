@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NewSpotify.Web.Models;
+using NewSpotify.Models.Models.StateManagerModels;
 using NewSpotify.Web.Services;
 using Newtonsoft.Json;
 
@@ -12,11 +12,13 @@ namespace NewSpotify.Web.Controllers
     {
         readonly MusicService _service;
         readonly ModelConverterService _converterService;
+        private readonly LikedSongsService _likedSongsService;
 
-        public SearchController(MusicService service, ModelConverterService converterService)
+        public SearchController(MusicService service, ModelConverterService converterService, LikedSongsService likedSongsService)
         {
             _service = service;
             _converterService = converterService;
+            _likedSongsService = likedSongsService;
         }
         
         public async Task<IActionResult> SearchResults(string searchString) 
@@ -58,7 +60,9 @@ namespace NewSpotify.Web.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var likeList = GetSessionState();
+            //var likeList = GetSessionState();
+
+            var likeList = _likedSongsService.GetLikedSongs();
             var tracks = await _service.GetTracksForPlaylistAsync(id);
             if (tracks == null)
             {
@@ -87,10 +91,11 @@ namespace NewSpotify.Web.Controllers
 
         public IActionResult SetSessionState(string trackId, string songName, string imageUrl, string bandName, string playlistId)
         {
+            _likedSongsService.SetLikedSongs(trackId, songName, imageUrl, bandName);
             const string likeListSessionKey = "_likeList";
             var likedSongList = GetSessionState();
 
-            var selectedSong = new SelectedSongItem()
+            var selectedSong = new SelectedSongItem
             {
                 TrackId = trackId,
                 SongName = songName,

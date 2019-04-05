@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NewSpotify.Web.Models;
+using NewSpotify.Models.Models.StateManagerModels;
 using NewSpotify.Web.Services;
 using Newtonsoft.Json;
 
@@ -13,14 +13,16 @@ namespace NewSpotify.Web.Controllers
     {
         private readonly MusicService _service;
         private readonly ModelConverterService _converterService;
+        private readonly LikedSongsService _likedSongsService;
 
-        public HomeController(MusicService service, ModelConverterService converterService)
+        public HomeController(MusicService service, ModelConverterService converterService, LikedSongsService likedSongsService)
         {
             _service = service;
             _converterService = converterService;
+            _likedSongsService = likedSongsService;
         }
 
-        public async Task<IActionResult> Index(string trackId, string songName, string imageUrl, string bandName)
+        public async Task<IActionResult> Index()
         {
             var likedSongList = GetSessionState();
 
