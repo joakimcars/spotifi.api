@@ -24,7 +24,7 @@ namespace NewSpotify.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var likedSongList = GetSessionState();
+            var likeList = _likedSongsService.GetLikedSongs();
 
             var categories = await _service.SearchCategoriesASync();
 
@@ -33,7 +33,7 @@ namespace NewSpotify.Web.Controllers
                 Response.StatusCode = 500;
                 return View("Error");
             }
-            var indexVm = _converterService.ConvertToIndexVm(categories, likedSongList);
+            var indexVm = _converterService.ConvertToIndexVm(categories, likeList);
             return View(indexVm);
         }
 
@@ -86,21 +86,20 @@ namespace NewSpotify.Web.Controllers
 
         public IActionResult RemoveSong(string trackId)
         {
-            const string likeListSessionKey = "_likeList";
-            var likedSongList = GetSessionState();
+            _likedSongsService.RemoveSong(trackId);
 
-            likedSongList.RemoveAll(t => t.TrackId == trackId);
-            var json = JsonConvert.SerializeObject(likedSongList);
-            HttpContext.Session.SetString(likeListSessionKey, json);
             return RedirectToAction("Index", "Home");
         }
 
         public IActionResult QuickRecommendation(string target)
         {
-            var likedSongList = GetSessionState();
+            
+            var likeList = _likedSongsService.GetLikedSongs();
+
             var likeListIds = new List<string>();
-            HttpContext.Session.Clear();
-            foreach (var track in likedSongList)
+            _likedSongsService.Clear();
+
+            foreach (var track in likeList)
             {
                 likeListIds.Add(track.TrackId);
             }
@@ -110,24 +109,9 @@ namespace NewSpotify.Web.Controllers
 
         public IActionResult NewSearch()
         {
-            HttpContext.Session.Clear();
+            _likedSongsService.Clear();
 
             return RedirectToAction("Index", "Home");
-        }
-
-        public List<SelectedSongItem> GetSessionState()
-        {
-            const string likeListSessionKey = "_likeList";
-            var likeList = new List<SelectedSongItem>();
-
-            var likeListStringJson = HttpContext.Session.GetString(likeListSessionKey);
-
-            if (likeListStringJson != null)
-            {
-                likeList = JsonConvert.DeserializeObject<List<SelectedSongItem>>(likeListStringJson);
-            }
-
-            return likeList;
         }
     }
 }

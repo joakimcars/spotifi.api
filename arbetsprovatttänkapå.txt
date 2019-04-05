@@ -1,17 +1,19 @@
 Arbetsprov food for thought:
 
-to do:
-
-*Skriv inte ut kategorier som inte har några spellistor.
-
-*Gör sökningen mer dynamisk genom att kunna få rekommendationer från artister också.
+to do efter feedback från Ronny:
 
 
 
 
-*Cachning/felhantering av tillägg i musikservice
 
-*refaktorisering av tillägg i musicservice
+Done av Ronny grejjer:
+
+* Skapa en partial view för selectedsongs.
+
+
+
+
+
 
 Done:
 

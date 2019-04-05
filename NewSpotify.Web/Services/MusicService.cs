@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Flurl;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using NewSpotify.Models.Models.Spotify;
 using Newtonsoft.Json;
 
@@ -13,22 +14,24 @@ namespace NewSpotify.Web.Services
     public class MusicService
     {
         private readonly IMemoryCache _memoryCache;
-        private const string ClientId = "996d0037680544c987287a9b0470fdbb";
-        private const string ClientSecret = "5a3c92099a324b8f9e45d77e919fec13";
+        private readonly IConfiguration _config;
+        //private const string ClientId = "996d0037680544c987287a9b0470fdbb";
+        //private const string ClientSecret = "5a3c92099a324b8f9e45d77e919fec13";
         private const string CategoryCacheKey = "_categoryCache";
 
         protected const string BaseUrl = "https://api.spotify.com/";
 
-        public MusicService(IMemoryCache memoryCache)
+        public MusicService(IMemoryCache memoryCache, IConfiguration config)
         {
             _memoryCache = memoryCache;
+            _config = config;
         }
 
         private HttpClient GetDefaultClient()
         {
             var authHandler = new SpotifyAuthClientCredentialsHttpMessageHandler(
-                ClientId,
-                ClientSecret,
+                _config["ClientId"],
+                _config["ClientSecret"],
                 new HttpClientHandler(),
                 _memoryCache
             );

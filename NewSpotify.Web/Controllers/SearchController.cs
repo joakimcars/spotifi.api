@@ -29,7 +29,7 @@ namespace NewSpotify.Web.Controllers
                 Response.StatusCode = 500;
                 return View("Error");
             }
-            var likeList = GetSessionState();
+            var likeList = _likedSongsService.GetLikedSongs();
 
             var resultVm = _converterService.ConvertToTracksVm(searchResults, likeList);
             return View("Tracks", resultVm);
@@ -39,8 +39,8 @@ namespace NewSpotify.Web.Controllers
 
         public async Task<IActionResult> PlayLists(string id)
         {
-           
-            var likeList = GetSessionState();
+
+            var likeList = _likedSongsService.GetLikedSongs();
             var playLists = await _service.GetPlayListsByCategoryAsync(id);
             if (playLists == null)
             {
@@ -55,12 +55,11 @@ namespace NewSpotify.Web.Controllers
 
         public async Task<IActionResult> Tracks(string id)
         {
+            //this should probably be done differently
             if (id == "")
             {
                 return RedirectToAction("Index", "Home");
             }
-
-            //var likeList = GetSessionState();
 
             var likeList = _likedSongsService.GetLikedSongs();
             var tracks = await _service.GetTracksForPlaylistAsync(id);
@@ -74,38 +73,9 @@ namespace NewSpotify.Web.Controllers
             return View(tracksVm);
         }
 
-        public List<SelectedSongItem> GetSessionState()
-        {
-            const string likeListSessionKey = "_likeList";
-            var likeList = new List<SelectedSongItem>();
-
-            var likeListStringJson = HttpContext.Session.GetString(likeListSessionKey);
-
-            if (likeListStringJson != null)
-            {
-                likeList = JsonConvert.DeserializeObject<List<SelectedSongItem>>(likeListStringJson);
-            }
-
-            return likeList;
-        }
-
         public IActionResult SetSessionState(string trackId, string songName, string imageUrl, string bandName, string playlistId)
         {
             _likedSongsService.SetLikedSongs(trackId, songName, imageUrl, bandName);
-            const string likeListSessionKey = "_likeList";
-            var likedSongList = GetSessionState();
-
-            var selectedSong = new SelectedSongItem
-            {
-                TrackId = trackId,
-                SongName = songName,
-                ImageUrl = imageUrl,
-                BandName = bandName
-            };
-
-            likedSongList.Add(selectedSong);
-            var json = JsonConvert.SerializeObject(likedSongList);
-            HttpContext.Session.SetString(likeListSessionKey, json);
 
             return playlistId == null ? RedirectToAction("Index", "Home") : RedirectToAction("Tracks", "Search", new { id = playlistId });
         }

@@ -8,5 +8,7 @@ namespace NewSpotify.Contracts
     {
         List<SelectedSongItem> GetLikedSongs();
         void SetLikedSongs(string trackId, string songName, string imageUrl, string bandName);
+        void RemoveSong(string trackId);
+        void Clear();
     }
 }

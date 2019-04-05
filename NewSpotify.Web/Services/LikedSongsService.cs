@@ -45,5 +45,19 @@ namespace NewSpotify.Web.Services
             var json = JsonConvert.SerializeObject(likedSongList);
             _httpContextAccessor.HttpContext.Session.SetString(LikeListSessionKey, json);
         }
+
+        public void RemoveSong(string trackId)
+        {
+            var likeList = GetLikedSongs();
+
+            likeList.RemoveAll(t => t.TrackId == trackId);
+            var json = JsonConvert.SerializeObject(likeList);
+            _httpContextAccessor.HttpContext.Session.SetString(LikeListSessionKey, json);
+        }
+
+        public void Clear()
+        {
+            _httpContextAccessor.HttpContext.Session.Clear();
+        }
     }
 }
