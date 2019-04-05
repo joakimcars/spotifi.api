@@ -17,7 +17,7 @@
         <div class="ml-5">
             <a class="navbar-brand" href="#">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa9Vs3xGtzftUc5lEkN_1yEpbBHWO9EK-O3mU7V5f7xu0RnXlz" height="30" width="30" />
-                Spotify Recommender
+                @Html.ActionLink("Spotify Recommender", "Index", "Home", new { index= ""}, new { @class = "navbar-brand" } )
             </a>
         </div>
 
@@ -27,6 +27,12 @@
                     <a class="nav-link" asp-controller="Home"
                        asp-action="NewSearch">
                         New Search
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home"
+                       asp-action="Index">
+                        Categories
                     </a>
                 </li>
             </ul>

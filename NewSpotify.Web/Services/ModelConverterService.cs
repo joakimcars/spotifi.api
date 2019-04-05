@@ -60,21 +60,23 @@ namespace NewSpotify.Web.Services
             return newList.ToList();
         }
 
-        public TracksVm ConvertToTracksVm(SpotifyTrackresponse response, List<SelectedSongItem> selections)
+        public TracksVm ConvertToTracksVm(SpotifyTrackresponse response, List<SelectedSongItem> selections, string playListId ="")
         {
             return new TracksVm()
             {
                 Tracks = BuildTracksViewModels(response.Items),
-                SelectedSongs = BuildSelectedSongsViewModels(selections)
+                SelectedSongs = BuildSelectedSongsViewModels(selections),
+                PlaylistId = playListId
             };
         }
 
-        public TracksVm ConvertToTracksVm(SpotifySearchTrackResponse response, List<SelectedSongItem> selections)
+        public TracksVm ConvertToTracksVm(SpotifySearchTrackResponse response, List<SelectedSongItem> selections, string playlistId="")
         {
             return new TracksVm()
             {
                 Tracks = BuildTracksViewModels(response.Tracks.Items),
-                SelectedSongs = BuildSelectedSongsViewModels(selections)
+                SelectedSongs = BuildSelectedSongsViewModels(selections),
+                PlaylistId = playlistId
             };
         }
 
@@ -130,8 +132,5 @@ namespace NewSpotify.Web.Services
                 Recommendations = BuildRecommendationsViewModels(response)
             };
         }
-
-
-
     }
 }

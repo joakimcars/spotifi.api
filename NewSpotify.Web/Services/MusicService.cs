@@ -107,7 +107,7 @@ namespace NewSpotify.Web.Services
                 var response = await client.GetStringAsync(url);
                 var playListResponse = JsonConvert.DeserializeObject<SpotifySearchPlayListResponse>(response);
                 _memoryCache.Set(categoryId, playListResponse, TimeSpan.FromHours(1));
-                return playListResponse;
+                return playListResponse.Playlists.Items.Count != 0 ? playListResponse : null;
             }
             catch (HttpRequestException)
             {
@@ -249,25 +249,35 @@ namespace NewSpotify.Web.Services
 
         public async Task<List<SpotifyTrack>> GetRecommendationByTrackFeatureAsync(List<string> tracks)
         {
-            var trackFeatureList = new List<SpotifyTrackFeaturesResponse>();
-            foreach (var track in tracks)
+            try
             {
-                var temp = await GetTrackFeaturesAsync(track);
-                trackFeatureList.Add(temp);
+                var trackFeatureList = new List<SpotifyTrackFeaturesResponse>();
+                foreach (var track in tracks)
+                {
+                    var temp = await GetTrackFeaturesAsync(track);
+                    trackFeatureList.Add(temp);
+                }
+
+                var avDanceAbility = trackFeatureList.Average(t => t.Danceability);
+                var avAcousticness = trackFeatureList.Average(t => t.Acousticness);
+                var avEnergy = trackFeatureList.Average(t => t.Energy);
+                var avInstrumentalness = trackFeatureList.Average(t => t.Instrumentalness);
+
+                var recommendations = await GetRecommendationsByFeaturesAsync(avDanceAbility, avAcousticness, avEnergy,
+                    avInstrumentalness, tracks);
+
+                var topTracks = (from t in recommendations.Tracks
+                    orderby t.Popularity descending
+                    select t).Take(20);
+
+                return topTracks.ToList();
             }
 
-            var avDanceAbility = trackFeatureList.Average(t => t.Danceability);
-            var avAcousticness = trackFeatureList.Average(t => t.Acousticness);
-            var avEnergy = trackFeatureList.Average(t => t.Energy);
-            var avInstrumentalness = trackFeatureList.Average(t => t.Instrumentalness);
-
-            var recommendations = await GetRecommendationsByFeaturesAsync(avDanceAbility, avAcousticness, avEnergy, avInstrumentalness, tracks);
-
-            var topTracks = (from t in recommendations.Tracks
-                orderby t.Popularity descending
-                select t).Take(20);
-
-            return topTracks.ToList();
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+            
         }
 
         public async Task<SpotifyTrackFeaturesResponse> GetTrackFeaturesAsync(string trackId)
@@ -297,17 +307,11 @@ namespace NewSpotify.Web.Services
                 url = url.SetQueryParam("seed_tracks", track);
             }
 
-            try
-            {
-                var response = await client.GetStringAsync(url);
-                var recommendationsResponse = JsonConvert.DeserializeObject<SpotifyRecomendationsresponse>(response);
+            var response = await client.GetStringAsync(url);
+            var recommendationsResponse = JsonConvert.DeserializeObject<SpotifyRecomendationsresponse>(response);
 
-                return recommendationsResponse;
-            }
-            catch (HttpRequestException)
-            {
-                return null;
-            }
+            return recommendationsResponse;
+           
         }
     }
 }

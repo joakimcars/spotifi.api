@@ -2,7 +2,7 @@ Arbetsprov food for thought:
 
 to do:
 
-
+*Skriv inte ut kategorier som inte har några spellistor.
 
 
 
@@ -11,6 +11,7 @@ to do:
 *refaktorisering av tillägg i musicservice
 
 Done:
+*Länka till start
 
 *Se om man kan refaktorisera ihop quick recommendations
 
@@ -44,8 +45,7 @@ Att fråga Tobbe:
 * Kan jag använda delegater för att kontrollera vilket metod i servicen som anropas från quickrecommendation
 
 
-
-
+ 
 
 
 

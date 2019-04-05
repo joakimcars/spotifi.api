@@ -1,5 +1,4 @@
 ﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
-@*@model NewSpotify.Web.Models.Spotify.SpotifyTrackresponse*@
 @model NewSpotify.Web.Models.ViewModels.TracksVm
 
 @{
@@ -88,7 +87,7 @@
                
                
                 <td>
-                    @using (Html.BeginForm("Index", "Home", new {trackId = track.Id, songName = track.Name, imageUrl = track.ImageUrl, bandName = track.ArtistName }, FormMethod.Post))
+                    @using (Html.BeginForm("SetSessionState", "Search", new {trackId = track.Id, songName = track.Name, imageUrl = track.ImageUrl, bandName = track.ArtistName, playlistId = @Model.PlaylistId }, FormMethod.Post))
                     {
                         <button type="submit" class="btn btn-primary">Like</button>
                     }

@@ -9,5 +9,7 @@ namespace NewSpotify.Web.Models.ViewModels
     {
         public List<TrackVm> Tracks { get; set; }
         public List<SelectedSongsVm> SelectedSongs { get; set; }
+
+        public string PlaylistId { get; set; }
     }
 }

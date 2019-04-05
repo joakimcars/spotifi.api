@@ -53,6 +53,11 @@ namespace NewSpotify.Web.Controllers
 
         public async Task<IActionResult> Tracks(string id)
         {
+            if (id == "")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var likeList = GetSessionState();
             var tracks = await _service.GetTracksForPlaylistAsync(id);
             if (tracks == null)
@@ -61,7 +66,7 @@ namespace NewSpotify.Web.Controllers
                 return View("Error");
             }
             tracks.SelectedSongs = likeList;
-            var tracksVm = _converterService.ConvertToTracksVm(tracks, likeList);
+            var tracksVm = _converterService.ConvertToTracksVm(tracks, likeList, id);
             return View(tracksVm);
         }
 
@@ -78,6 +83,26 @@ namespace NewSpotify.Web.Controllers
             }
 
             return likeList;
+        }
+
+        public IActionResult SetSessionState(string trackId, string songName, string imageUrl, string bandName, string playlistId)
+        {
+            const string likeListSessionKey = "_likeList";
+            var likedSongList = GetSessionState();
+
+            var selectedSong = new SelectedSongItem()
+            {
+                TrackId = trackId,
+                SongName = songName,
+                ImageUrl = imageUrl,
+                BandName = bandName
+            };
+
+            likedSongList.Add(selectedSong);
+            var json = JsonConvert.SerializeObject(likedSongList);
+            HttpContext.Session.SetString(likeListSessionKey, json);
+
+            return playlistId == null ? RedirectToAction("Index", "Home") : RedirectToAction("Tracks", "Search", new { id = playlistId });
         }
     }
 }
