@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NewSpotify.Contracts;
 using NewSpotify.Models.Models.StateManagerModels;
 using Newtonsoft.Json;
@@ -10,6 +12,7 @@ namespace NewSpotify.Web.Services
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private const string LikeListSessionKey = "_likeList";
+
         public LikedSongsService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -27,6 +30,14 @@ namespace NewSpotify.Web.Services
             }
 
             return likeList;
+        }
+
+        public List<string> GetLikedSongsIds()
+        {
+            var likedSongList = GetLikedSongs();
+            var idList = likedSongList.Select(s => s.TrackId);
+                
+            return idList.ToList();
         }
 
         public void SetLikedSongs(string trackId, string songName, string imageUrl, string bandName)

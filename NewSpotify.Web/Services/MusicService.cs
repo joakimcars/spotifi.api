@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using NewSpotify.Models.Models.Spotify;
 using Newtonsoft.Json;
+using NewSpotify.Models.Models.HelperModels;
 
 namespace NewSpotify.Web.Services
 {
@@ -15,8 +16,6 @@ namespace NewSpotify.Web.Services
     {
         private readonly IMemoryCache _memoryCache;
         private readonly IConfiguration _config;
-        //private const string ClientId = "996d0037680544c987287a9b0470fdbb";
-        //private const string ClientSecret = "5a3c92099a324b8f9e45d77e919fec13";
         private const string CategoryCacheKey = "_categoryCache";
 
         protected const string BaseUrl = "https://api.spotify.com/";
@@ -44,6 +43,18 @@ namespace NewSpotify.Web.Services
             return client;
         }
 
+        public async Task<T> GetResponseAsync<T>(Url url, string cacheKey = null) 
+        {
+            var client = GetDefaultClient();
+            var response = await client.GetStringAsync(url);
+            var tracksResponse = JsonConvert.DeserializeObject<T>(response);
+            if (cacheKey != null)
+            {
+                _memoryCache.Set(cacheKey, tracksResponse, TimeSpan.FromHours(1));
+            }
+            return tracksResponse;
+        }
+
         public async Task<SpotifySearchTrackResponse> SearchTracksAsync(string trackName)
         {
             if (_memoryCache.TryGetValue(trackName, out var cacheValue))
@@ -51,18 +62,13 @@ namespace NewSpotify.Web.Services
                 return cacheValue as SpotifySearchTrackResponse;
             }
 
-            var client = GetDefaultClient();
-
             var url = new Url("/v1/search");
             url = url.SetQueryParam("q", trackName);
             url = url.SetQueryParam("type", "track");
 
             try
             {
-                var response = await client.GetStringAsync(url);
-                var tracksResponse = JsonConvert.DeserializeObject<SpotifySearchTrackResponse>(response);
-                _memoryCache.Set(trackName, tracksResponse, TimeSpan.FromHours(1));
-                return tracksResponse;
+                return await GetResponseAsync<SpotifySearchTrackResponse>(url, trackName);
             }
             catch (HttpRequestException)
             {
@@ -77,16 +83,11 @@ namespace NewSpotify.Web.Services
             {
                 return cacheValue as SpotifySearchCategoriesResponse;
             }
-
-            var client = GetDefaultClient();
+            
             var url = new Url("/v1/browse/categories");
             try
             {
-                var response = await client.GetStringAsync(url);
-                var categoriesResponse = JsonConvert.DeserializeObject<SpotifySearchCategoriesResponse>(response);
-                _memoryCache.Set(CategoryCacheKey, categoriesResponse, TimeSpan.FromHours(1));
-
-                return categoriesResponse;
+                return await GetResponseAsync<SpotifySearchCategoriesResponse>(url, CategoryCacheKey);
             }
             catch (HttpRequestException)
             {
@@ -100,16 +101,13 @@ namespace NewSpotify.Web.Services
             {
                 return cacheValue;
             }
-
-            var client = GetDefaultClient();
+            
             var endpoint = $"/v1/browse/categories/{categoryId}/playlists";
-
             var url = new Url(endpoint);
+
             try
             {
-                var response = await client.GetStringAsync(url);
-                var playListResponse = JsonConvert.DeserializeObject<SpotifySearchPlayListResponse>(response);
-                _memoryCache.Set(categoryId, playListResponse, TimeSpan.FromHours(1));
+                var playListResponse = await GetResponseAsync<SpotifySearchPlayListResponse>(url, categoryId);
                 return playListResponse.Playlists.Items.Count != 0 ? playListResponse : null;
             }
             catch (HttpRequestException)
@@ -125,17 +123,12 @@ namespace NewSpotify.Web.Services
             {
                 return cacheValue;
             }
-
-            var client = GetDefaultClient();
-            string endpoint = $"v1/playlists/{playListId}/tracks";
+            
+            var endpoint = $"v1/playlists/{playListId}/tracks";
             var url = new Url(endpoint);
             try
             {
-                var response = await client.GetStringAsync(url);
-                var tracksResponse = JsonConvert.DeserializeObject<SpotifyTrackresponse>(response);
-                _memoryCache.Set(playListId, tracksResponse, TimeSpan.FromHours(1));
-
-                return tracksResponse;
+                return await GetResponseAsync<SpotifyTrackresponse>(url, playListId);
             }
             catch (HttpRequestException)
             {
@@ -146,7 +139,6 @@ namespace NewSpotify.Web.Services
 
         public async Task<List<SpotifyTrack>> GetRecommendationsAsync(List<string> tracks)
         {
-            var client = GetDefaultClient();
             var url = new Url("/v1/recommendations");
 
             foreach (var track in tracks)
@@ -156,12 +148,11 @@ namespace NewSpotify.Web.Services
 
             try
             {
-                var response = await client.GetStringAsync(url);
-                var recommendationsResponse = JsonConvert.DeserializeObject<SpotifyRecomendationsresponse>(response);
+                var recommendationsResponse = await GetResponseAsync<SpotifyRecomendationsresponse>(url);
 
                 var topTracks = (from t in recommendationsResponse.Tracks
                                  orderby t.Popularity descending
-                    select t).Take(20);
+                                 select t).Take(20);
 
                 return topTracks.ToList();
             }
@@ -173,11 +164,15 @@ namespace NewSpotify.Web.Services
 
         public async Task<List<SpotifyTrack>> GetRecommendationByRelatedAsync(List<string> tracks)
         {
+            //ändra till en concurrent bag
+            //om det ens behöver sparas
             var artistIds = new List<string>();
+
             foreach (var track in tracks)
             {
                 var fullTrack = await GetTracksAsync(track);
                 var artistId = fullTrack.Artists.FirstOrDefault()?.Id;
+                //anropa getrelatedartist
                 artistIds.Add(artistId);
             }
 
@@ -210,24 +205,19 @@ namespace NewSpotify.Web.Services
 
         public async Task<SpotifyTrack> GetTracksAsync(string trackId)
         {
-            var client = GetDefaultClient();
             var endpoint = $"v1/tracks/{trackId}";
             var url = new Url(endpoint);
-            var response = await client.GetStringAsync(url);
-
-            var trackResponse = JsonConvert.DeserializeObject<SpotifyTrack>(response);
-
-            return trackResponse;
+            
+            return await GetResponseAsync<SpotifyTrack>(url);
         }
 
         public async Task<List<SpotifyArtist>> GetRelatedArtistAsync(string artistId)
         {
-            var client = GetDefaultClient();
             var endpoint = $"v1/artists/{artistId}/related-artists";
             var url = new Url(endpoint);
-            var response = await client.GetStringAsync(url);
+            
+            var trackResponse = await GetResponseAsync<SpotifyArtistResponse>(url);
 
-            var trackResponse = JsonConvert.DeserializeObject<SpotifyArtistResponse>(response);
             var topArtists = (from t in trackResponse.Artists
                 orderby t.Popularity descending
                 select t).Take(5);
@@ -237,12 +227,11 @@ namespace NewSpotify.Web.Services
 
         public async Task<List<SpotifyTrack>> GetTopTracksForArtistAsync(string artistId)
         {
-            var client = GetDefaultClient();
             var endpoint = $"v1/artists/{artistId}/top-tracks?country=ES";
             var url = new Url(endpoint);
-            var response = await client.GetStringAsync(url);
+           
+            var topTrackResponse = await GetResponseAsync<SpotifyTopTracksResponse>(url);
 
-            var topTrackResponse = JsonConvert.DeserializeObject<SpotifyTopTracksResponse>(response);
             var topTracks = (from t in topTrackResponse.Tracks
                 orderby t.Popularity descending
                 select t).Take(4);
@@ -261,13 +250,16 @@ namespace NewSpotify.Web.Services
                     trackFeatureList.Add(temp);
                 }
 
-                var avDanceAbility = trackFeatureList.Average(t => t.Danceability);
-                var avAcousticness = trackFeatureList.Average(t => t.Acousticness);
-                var avEnergy = trackFeatureList.Average(t => t.Energy);
-                var avInstrumentalness = trackFeatureList.Average(t => t.Instrumentalness);
+                var features = new TrackFeatures
+                {
+                    Danceability = trackFeatureList.Average(t => t.Danceability),
+                    Acousticness = trackFeatureList.Average(t => t.Acousticness),
+                    Energy = trackFeatureList.Average(t => t.Energy),
+                    Instrumentalness = trackFeatureList.Average(t => t.Instrumentalness),
+                    Tracks = tracks
+                };
 
-                var recommendations = await GetRecommendationsByFeaturesAsync(avDanceAbility, avAcousticness, avEnergy,
-                    avInstrumentalness, tracks);
+                var recommendations = await GetRecommendationsByFeaturesAsync(features);
 
                 var topTracks = (from t in recommendations.Tracks
                     orderby t.Popularity descending
@@ -280,41 +272,32 @@ namespace NewSpotify.Web.Services
             {
                 return null;
             }
-            
         }
 
         public async Task<SpotifyTrackFeaturesResponse> GetTrackFeaturesAsync(string trackId)
         {
-            var client = GetDefaultClient();
             var endpoint = $"v1/audio-features/{trackId}";
             var url = new Url(endpoint);
-            var response = await client.GetStringAsync(url);
-            var trackFeaturesResponse = JsonConvert.DeserializeObject<SpotifyTrackFeaturesResponse>(response);
-
-            return trackFeaturesResponse;
+            
+            return await GetResponseAsync<SpotifyTrackFeaturesResponse>(url);
         }
 
-        public async Task<SpotifyRecomendationsresponse> GetRecommendationsByFeaturesAsync(double danceability, double acousticness, double energy, double instrumentalness, List<string> tracks )
+        public async Task<SpotifyRecomendationsresponse> GetRecommendationsByFeaturesAsync(TrackFeatures features )
         {
-            var client = GetDefaultClient();
             var url = new Url("/v1/recommendations");
 
-            url = url.SetQueryParam("target_danceability", danceability);
-            url = url.SetQueryParam("target_acousticness", acousticness);
-            url = url.SetQueryParam("target_energy", energy);
-            url = url.SetQueryParam("target_instrumentalness", instrumentalness);
+            url = url.SetQueryParam("target_danceability", features.Danceability);
+            url = url.SetQueryParam("target_acousticness", features.Acousticness);
+            url = url.SetQueryParam("target_energy", features.Energy);
+            url = url.SetQueryParam("target_instrumentalness", features.Instrumentalness);
             url = url.SetQueryParam("min_popularity", 50);
 
-            foreach (var track in tracks)
+            foreach (var track in features.Tracks)
             {
                 url = url.SetQueryParam("seed_tracks", track);
             }
 
-            var response = await client.GetStringAsync(url);
-            var recommendationsResponse = JsonConvert.DeserializeObject<SpotifyRecomendationsresponse>(response);
-
-            return recommendationsResponse;
-           
+            return await GetResponseAsync<SpotifyRecomendationsresponse>(url);
         }
     }
 }

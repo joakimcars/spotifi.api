@@ -55,12 +55,6 @@ namespace NewSpotify.Web.Controllers
 
         public async Task<IActionResult> Tracks(string id)
         {
-            //this should probably be done differently
-            if (id == "")
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             var likeList = _likedSongsService.GetLikedSongs();
             var tracks = await _service.GetTracksForPlaylistAsync(id);
             if (tracks == null)
@@ -68,16 +62,16 @@ namespace NewSpotify.Web.Controllers
                 Response.StatusCode = 500;
                 return View("Error");
             }
-            tracks.SelectedSongs = likeList;
+            
             var tracksVm = _converterService.ConvertToTracksVm(tracks, likeList, id);
             return View(tracksVm);
         }
 
-        public IActionResult SetSessionState(string trackId, string songName, string imageUrl, string bandName, string playlistId)
+        public IActionResult AddLikedSong(SelectedSongItem song)
         {
-            _likedSongsService.SetLikedSongs(trackId, songName, imageUrl, bandName);
+            _likedSongsService.SetLikedSongs(song.TrackId, song.SongName, song.ImageUrl, song.BandName);
 
-            return playlistId == null ? RedirectToAction("Index", "Home") : RedirectToAction("Tracks", "Search", new { id = playlistId });
+            return song.PlaylistId == null ? RedirectToAction("Index", "Home") : RedirectToAction("Tracks", "Search", new { id = song.PlaylistId });
         }
     }
 }

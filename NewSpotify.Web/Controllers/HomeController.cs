@@ -34,12 +34,12 @@ namespace NewSpotify.Web.Controllers
                 return View("Error");
             }
             var indexVm = _converterService.ConvertToIndexVm(categories, likeList);
+
             return View(indexVm);
         }
 
         public async Task<IActionResult> RecommendationsBySpotify(List<string> trackIds)
         {
-
             var recommendations = await _service.GetRecommendationsAsync(trackIds);
 
             if (recommendations == null)
@@ -70,7 +70,6 @@ namespace NewSpotify.Web.Controllers
 
         public async Task<IActionResult> RecommendationsByTrackFeature(List<string> trackIds)
         {
-
             var recommendations = await _service.GetRecommendationByTrackFeatureAsync(trackIds);
 
             if (recommendations == null)
@@ -93,16 +92,7 @@ namespace NewSpotify.Web.Controllers
 
         public IActionResult QuickRecommendation(string target)
         {
-            
-            var likeList = _likedSongsService.GetLikedSongs();
-
-            var likeListIds = new List<string>();
-            _likedSongsService.Clear();
-
-            foreach (var track in likeList)
-            {
-                likeListIds.Add(track.TrackId);
-            }
+            var likeListIds = _likedSongsService.GetLikedSongsIds();
 
             return RedirectToAction(target, "Home", new { trackIds = likeListIds });
         }

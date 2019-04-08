@@ -15,5 +15,7 @@ namespace NewSpotify.Models.Models.StateManagerModels
 
         [JsonProperty("ImageUrl")]
         public string ImageUrl { get; set; }
+
+        public string PlaylistId { get; set; }
     }
 }
