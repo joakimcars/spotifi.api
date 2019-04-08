@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using Flurl;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using NewSpotify.Models.Models.Spotify;
 using Newtonsoft.Json;
 using NewSpotify.Models.Models.HelperModels;
@@ -15,22 +17,22 @@ namespace NewSpotify.Web.Services
     public class MusicService
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly IConfiguration _config;
         private const string CategoryCacheKey = "_categoryCache";
+        private AppSettings AppSettings { get; set; }
 
         protected const string BaseUrl = "https://api.spotify.com/";
 
-        public MusicService(IMemoryCache memoryCache, IConfiguration config)
+        public MusicService(IMemoryCache memoryCache, IOptions<AppSettings> settings)
         {
             _memoryCache = memoryCache;
-            _config = config;
+            AppSettings = settings.Value;
         }
 
         private HttpClient GetDefaultClient()
         {
             var authHandler = new SpotifyAuthClientCredentialsHttpMessageHandler(
-                _config["ClientId"],
-                _config["ClientSecret"],
+                AppSettings.ClientId,
+                AppSettings.ClientSecret,
                 new HttpClientHandler(),
                 _memoryCache
             );
@@ -164,46 +166,54 @@ namespace NewSpotify.Web.Services
 
         public async Task<List<SpotifyTrack>> GetRecommendationByRelatedAsync(List<string> tracks)
         {
-            //ändra till en concurrent bag
-            //om det ens behöver sparas
-            var artistIds = new List<string>();
-
-            foreach (var track in tracks)
-            {
-                var fullTrack = await GetTracksAsync(track);
-                var artistId = fullTrack.Artists.FirstOrDefault()?.Id;
-                //anropa getrelatedartist
-                artistIds.Add(artistId);
-            }
-
-            var relatedArtists = new List<SpotifyArtist>();
-            foreach (var artist in artistIds)
-            {
-                var temp = await GetRelatedArtistAsync(artist);
-                foreach (var relatedArtist in temp)
-                {
-                    relatedArtists.Add(relatedArtist);
-                }
-            }
 
             var topTracks = new List<SpotifyTrack>();
-            foreach (var artist in relatedArtists)
+            foreach (var track in tracks)
             {
-                var temp = await GetTopTracksForArtistAsync(artist.Id);
-                foreach (var topTrack in temp)
+                var fullTrack = await GetTrackAsync(track);
+                var artistId = fullTrack.Artists.FirstOrDefault()?.Id;
+
+                var relatedArtists = await GetRelatedArtistAsync(artistId);
+
+                foreach (var artist in relatedArtists)
                 {
-                    topTracks.Add(topTrack);
+                    var temp = await GetTopTracksForArtistAsync(artist.Id);
+                    foreach (var topTrack in temp)
+                    {
+                        topTracks.Add(topTrack);
+                    }
                 }
+
             }
 
+            //var topTracksList = new ConcurrentBag<SpotifyTrack>();
+            //Parallel.ForEach(tracks, async(currentTrack) =>
+            //{
+            //    var fullTrack = await GetTrackAsync(currentTrack);
+            //    var artistId = fullTrack.Artists.FirstOrDefault()?.Id;
+
+            //    if (string.IsNullOrWhiteSpace(artistId)) return;
+            //    var relatedArtists = await GetRelatedArtistAsync(artistId);
+
+            //    foreach (var artist in relatedArtists)
+            //    {
+            //        var temp = await GetTopTracksForArtistAsync(artist.Id);
+            //        foreach (var topTrack in temp)
+            //        {
+            //            topTracksList.Add(topTrack);
+            //        }
+            //    }
+            //});
+
+
             var recommendations = (from t in topTracks
-                orderby t.Popularity descending
-                select t).Take(20);
+                                   orderby t.Popularity descending
+                                   select t).Take(20);
 
             return recommendations.ToList();
         }
 
-        public async Task<SpotifyTrack> GetTracksAsync(string trackId)
+        public async Task<SpotifyTrack> GetTrackAsync(string trackId)
         {
             var endpoint = $"v1/tracks/{trackId}";
             var url = new Url(endpoint);
