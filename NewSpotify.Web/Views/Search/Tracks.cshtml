@@ -36,28 +36,31 @@
 
         @foreach (var track in Model.Tracks)
         {
-            <tr>
-                <td>
-                    <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt="" /> @track.Name
-                </td>
-                <td>
-                    @track.ArtistName
-                </td>
-                <td>
-                    @track.AlbumName
-                </td>
-                <td>
-                    @track.Popularity
-                </td>
+            if (@Model.SelectedSongs.All(t => t.TrackId != track.Id))
+            {
+                <tr>
+                    <td>
+                        <img src="@track.ImageUrl" class="img-responsive voc_list_preview_img" height="35" width="35" alt=""/> @track.Name
+                    </td>
+                    <td>
+                        @track.ArtistName
+                    </td>
+                    <td>
+                        @track.AlbumName
+                    </td>
+                    <td>
+                        @track.Popularity
+                    </td>
 
 
-                <td>
-                    @using (Html.BeginForm("AddLikedSong", "Search", new SelectedSongItem { TrackId = track.Id, SongName = track.Name, ImageUrl = track.ImageUrl, BandName = track.ArtistName, PlaylistId = @Model.PlaylistId }, FormMethod.Post))
-                    {
-                        <button type="submit" class="btn btn-primary">Like</button>
-                    }
-                </td>
-            </tr>
+                    <td>
+                        @using (Html.BeginForm("AddLikedSong", "Search", new SelectedSongItem {TrackId = track.Id, SongName = track.Name, ImageUrl = track.ImageUrl, BandName = track.ArtistName, PlaylistId = @Model.PlaylistId}, FormMethod.Post))
+                        {
+                            <button type="submit" class="btn btn-primary">Like</button>
+                        }
+                    </td>
+                </tr>
+            }
         }
     </table>
 </div>
