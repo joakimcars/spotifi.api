@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -166,8 +167,7 @@ namespace NewSpotify.Web.Services
 
         public async Task<List<SpotifyTrack>> GetRecommendationByRelatedAsync(List<string> tracks)
         {
-
-            var topTracks = new List<SpotifyTrack>();
+            var topTracks = new ConcurrentBag<SpotifyTrack>();
             foreach (var track in tracks)
             {
                 var fullTrack = await GetTrackAsync(track);
@@ -175,36 +175,15 @@ namespace NewSpotify.Web.Services
 
                 var relatedArtists = await GetRelatedArtistAsync(artistId);
 
-                foreach (var artist in relatedArtists)
+                Parallel.ForEach(relatedArtists, async (artist) =>
                 {
                     var temp = await GetTopTracksForArtistAsync(artist.Id);
                     foreach (var topTrack in temp)
                     {
                         topTracks.Add(topTrack);
                     }
-                }
-
+                });
             }
-
-            //var topTracksList = new ConcurrentBag<SpotifyTrack>();
-            //Parallel.ForEach(tracks, async(currentTrack) =>
-            //{
-            //    var fullTrack = await GetTrackAsync(currentTrack);
-            //    var artistId = fullTrack.Artists.FirstOrDefault()?.Id;
-
-            //    if (string.IsNullOrWhiteSpace(artistId)) return;
-            //    var relatedArtists = await GetRelatedArtistAsync(artistId);
-
-            //    foreach (var artist in relatedArtists)
-            //    {
-            //        var temp = await GetTopTracksForArtistAsync(artist.Id);
-            //        foreach (var topTrack in temp)
-            //        {
-            //            topTracksList.Add(topTrack);
-            //        }
-            //    }
-            //});
-
 
             var recommendations = (from t in topTracks
                                    orderby t.Popularity descending
